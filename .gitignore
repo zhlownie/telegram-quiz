@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+venv/
+env/
+
+# Tests / type checking / coverage
+.pytest_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Logs and caches
+*.log
+.cache/
+
+# Flask instance folder
+instance/
+
+# Env files (tokens, secrets)
+.env
+.env.*
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+
+# VS Code – ignore most, keep common project files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
