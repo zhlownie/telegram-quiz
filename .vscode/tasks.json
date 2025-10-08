@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Telegram quiz: pip install and run",
+			"type": "shell",
+			"command": "pip install -r requirements.txt && python app.py",
+			"isBackground": false,
+			"group": "build"
+		}
+	]
+}
