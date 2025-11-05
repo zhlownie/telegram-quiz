@@ -88,6 +88,8 @@ def ensure_session(chat_id: int) -> Dict[str, Any]:
         sess = {
             "index": 0,
             "score": 0,
+            "team_name": None,
+            "state": None,  # 'awaiting_team_name' | 'awaiting_ready' | None
         }
         sessions[chat_id] = sess
     return sess
@@ -184,7 +186,15 @@ def telegram_webhook() -> Any:
         chat = message.get("chat", {})
         chat_id = chat.get("id")
         if chat_id is not None and data:
-            handle_answer(int(chat_id), str(data))
+            # Intercept special non-answer actions first
+            if str(data).upper() == "READY":
+                sess = ensure_session(int(chat_id))
+                sess["state"] = None  # entering quiz
+                sess["index"] = 0
+                # Kick off the first question
+                present_question(int(chat_id))
+            else:
+                handle_answer(int(chat_id), str(data))
         # Always answer callback to remove loading state
         try:
             requests.post(tg_api("answerCallbackQuery"), json={"callback_query_id": cq.get("id")}, timeout=10)
@@ -204,9 +214,52 @@ def telegram_webhook() -> Any:
         # Normalize commands
         upper = text.upper()
         if upper in ("/START", "START"):
-            sessions[int(chat_id)] = {"index": 0, "score": 0}
-            send_message(int(chat_id), "🎉 Welcome to the Singapore Quiz! Tap a button to answer.")
-            present_question(int(chat_id))
+            # Reset and begin pre-start flow
+            sessions[int(chat_id)] = {"index": 0, "score": 0, "team_name": None, "state": "awaiting_team_name"}
+            send_message(
+                int(chat_id),
+                (
+                    "Welcome to the NYGH Art Scavenger Hunt!\n\n"
+                    "Get ready to explore, discover hidden gems, and uncover the beauty of art around you.\n\n"
+                    "Before we start, here are some quick tips:\n\n"
+                    "- If you run into any issues, message us on Telegram.\n"
+                    "- Please don’t share any sensitive information here as this chat may be saved for quality and improvement purposes.\n\n"
+                    "Lastly, what’s your team’s name?\n\n"
+                    "Type it below to begin!"
+                )
+            )
+            return jsonify({"ok": True})
+
+        # Team name capture & READY gate take precedence over other text handling
+        sess = ensure_session(int(chat_id))
+        if sess.get("state") == "awaiting_team_name" and text:
+            team_name = text.strip()
+            sess["team_name"] = team_name
+            sess["state"] = "awaiting_ready"
+            intro = (
+                f"Greetings \"{team_name}\", young art adventurers!\n\n"
+                "I am Madam Linden, once an artist in these very halls. I’ve collected artworks that captured the heart of NYGH — but only the keenest eyes can uncover the legacies I’ve hidden across time.\n\n"
+                "Today, you’ll follow in my footsteps, solving puzzles and revealing the artistic footprints left behind by generations of students and teachers.\n\n"
+                "But beware! ⏱️ Your journey will be timed — speed and accuracy will determine your place on the leaderboard.\n\n"
+                "Be cautious with your answers — mistakes or requests for help will cost you precious seconds, and even my spirit cannot save you from the penalty of a typo or a wayward auto-correct.\n\n"
+                "Now, gather your courage and creativity…\n\n"
+                "Your hunt begins when you press READY."
+            )
+            # Send intro and show READY button
+            send_message(int(chat_id), intro)
+            ready_kb = build_inline_keyboard(["READY"])  # single ready button
+            send_message(int(chat_id), "Press READY to begin.", reply_markup=ready_kb)
+            return jsonify({"ok": True})
+
+        if sess.get("state") == "awaiting_ready":
+            if upper == "READY":
+                sess["state"] = None
+                sess["index"] = 0
+                present_question(int(chat_id))
+                return jsonify({"ok": True})
+            # Nudge to press READY
+            ready_kb = build_inline_keyboard(["READY"])  # re-show button
+            send_message(int(chat_id), "Please press READY to start the hunt.", reply_markup=ready_kb)
             return jsonify({"ok": True})
 
         if upper == "HINT":
@@ -224,7 +277,6 @@ def telegram_webhook() -> Any:
 
         # Fallback: if user types an option exactly, accept it
         if text:
-            sess = ensure_session(int(chat_id))
             idx = sess["index"]
             if idx < len(QUESTIONS):
                 options = QUESTIONS[idx]["options"]
