@@ -82,6 +82,18 @@ def send_photo_with_buttons(chat_id: int, photo_url: str, caption: str, reply_ma
     resp.raise_for_status()
 
 
+def send_photo(chat_id: int, photo_url: str, caption: str | None = None) -> None:
+    payload: Dict[str, Any] = {
+        "chat_id": chat_id,
+        "photo": photo_url,
+        "parse_mode": "HTML",
+    }
+    if caption is not None:
+        payload["caption"] = caption
+    resp = requests.post(tg_api("sendPhoto"), json=payload, timeout=10)
+    resp.raise_for_status()
+
+
 def ensure_session(chat_id: int) -> Dict[str, Any]:
     sess = sessions.get(chat_id)
     if not sess:
@@ -236,6 +248,13 @@ def telegram_webhook() -> Any:
             team_name = text.strip()
             sess["team_name"] = team_name
             sess["state"] = "awaiting_ready"
+            # Show Madam Linden image first
+            try:
+                abs_img = make_absolute_image_url("static/images/madam_linden.png")
+                send_photo(int(chat_id), abs_img)
+            except Exception:
+                # If the image fails to send, continue gracefully
+                pass
             intro = (
                 f"<b>Greetings \"{team_name}\", young art adventurers!</b>\n\n"
                 "I am Madam Linden, once an artist in these very halls. I’ve collected artworks that captured the heart of NYGH — but only the keenest eyes can uncover the legacies I’ve hidden across time.\n\n"
