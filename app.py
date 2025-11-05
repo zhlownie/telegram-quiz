@@ -237,13 +237,13 @@ def telegram_webhook() -> Any:
             sess["team_name"] = team_name
             sess["state"] = "awaiting_ready"
             intro = (
-                f"Greetings \"{team_name}\", young art adventurers!\n\n"
+                f"<b>Greetings \"{team_name}\", young art adventurers!</b>\n\n"
                 "I am Madam Linden, once an artist in these very halls. I’ve collected artworks that captured the heart of NYGH — but only the keenest eyes can uncover the legacies I’ve hidden across time.\n\n"
                 "Today, you’ll follow in my footsteps, solving puzzles and revealing the artistic footprints left behind by generations of students and teachers.\n\n"
-                "But beware! ⏱️ Your journey will be timed — speed and accuracy will determine your place on the leaderboard.\n\n"
-                "Be cautious with your answers — mistakes or requests for help will cost you precious seconds, and even my spirit cannot save you from the penalty of a typo or a wayward auto-correct.\n\n"
+                "<b>But beware! ⏱️ Your journey will be timed</b> — speed and accuracy will determine your place on the leaderboard.\n\n"
+                "<i>Be cautious with your answers — mistakes or requests for help will cost you precious seconds, and even my spirit cannot save you from the penalty of a typo or a wayward auto-correct.</i>\n\n"
                 "Now, gather your courage and creativity…\n\n"
-                "Your hunt begins when you press READY."
+                "<b>Your hunt begins when you press READY.</b>"
             )
             # Send intro and show READY button
             send_message(int(chat_id), intro)
