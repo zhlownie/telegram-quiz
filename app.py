@@ -248,7 +248,7 @@ def telegram_webhook() -> Any:
             # Send intro and show READY button
             send_message(int(chat_id), intro)
             ready_kb = build_inline_keyboard(["READY"])  # single ready button
-            send_message(int(chat_id), "Press READY to begin.", reply_markup=ready_kb)
+            send_message(int(chat_id), "▶️ <b>Press READY to begin.</b>", reply_markup=ready_kb)
             return jsonify({"ok": True})
 
         if sess.get("state") == "awaiting_ready":
@@ -259,7 +259,7 @@ def telegram_webhook() -> Any:
                 return jsonify({"ok": True})
             # Nudge to press READY
             ready_kb = build_inline_keyboard(["READY"])  # re-show button
-            send_message(int(chat_id), "Please press READY to start the hunt.", reply_markup=ready_kb)
+            send_message(int(chat_id), "▶️ Please press <b>READY</b> to start the hunt.", reply_markup=ready_kb)
             return jsonify({"ok": True})
 
         if upper == "HINT":
