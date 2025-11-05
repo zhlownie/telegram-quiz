@@ -38,7 +38,7 @@ sessions: Dict[int, Dict[str, Any]] = {}
 # Env
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL")
-# Hint penalty (in seconds) applied when a hint is used; configurable via env
+# Hint penalty currently disabled; keep env for future use if needed
 HINT_PENALTY_SECS = int(os.environ.get("HINT_PENALTY_SECS", "20"))
 HINT_BUTTON_DATA = "__HINT__"
 
@@ -137,8 +137,8 @@ def ensure_session(chat_id: int) -> Dict[str, Any]:
             "team_name": None,
             "state": None,  # 'awaiting_team_name' | 'awaiting_ready' | None
             "started_at": None,  # UNIX timestamp when quiz starts (on READY)
-            "penalty_secs": 0,  # accumulated time penalties (e.g., for hints)
-            "hint_used_indices": [],  # list of question indices where hint already used
+            "penalty_secs": 0,  # (unused now) accumulated time penalties
+            "hint_used_indices": [],  # (unused now) indices where hint already used
         }
         sessions[chat_id] = sess
     else:
@@ -198,15 +198,8 @@ def _use_hint_and_reprompt(chat_id: int) -> None:
         send_message(chat_id, "No hint available for this question.")
         return
 
-    # Apply penalty if not already used for this question
-    used_list = sess.get("hint_used_indices", [])
-    if idx not in used_list:
-        sess["penalty_secs"] = int(sess.get("penalty_secs", 0)) + int(HINT_PENALTY_SECS)
-        used_list.append(idx)
-        sess["hint_used_indices"] = used_list
-        send_message(chat_id, f"💡 Hint: {hint}\n(⏱️ +{HINT_PENALTY_SECS}s penalty)")
-    else:
-        send_message(chat_id, f"💡 Hint: {hint}")
+    # Penalties disabled: just show hint
+    send_message(chat_id, f"💡 Hint: {hint}")
 
     # Re-present the same question (with hint button still available, but no extra penalty)
     present_question(chat_id)
@@ -260,10 +253,7 @@ def finalize_quiz(chat_id: int) -> None:
     duration_line = ""
     if sess.get("started_at"):
         elapsed = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
-        penalties = int(sess.get("penalty_secs", 0))
-        total_elapsed = elapsed + penalties
-        penalty_note = f" (includes +{_fmt_dur(penalties)} for hints)" if penalties > 0 else ""
-        duration_line = f"\n⏱️ Time: <b>{_fmt_dur(total_elapsed)}</b>{penalty_note}"
+        duration_line = f"\n⏱️ Time: <b>{_fmt_dur(elapsed)}</b>"
 
     team = sess.get("team_name") or "Adventurers"
     finish = (
