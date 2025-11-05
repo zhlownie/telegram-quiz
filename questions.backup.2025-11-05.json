@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "question": "What is the national flower of Singapore?",
+    "options": ["Vanda Miss Joaquim", "Hibiscus", "Lotus"],
+    "answer": "Vanda Miss Joaquim",
+    "hint": "It's a type of orchid named after a Singaporean woman.",
+    "explanation": "The Vanda Miss Joaquim was chosen as Singapore's national flower in 1981 for its resilience and year-round blooming."
+  },
+  {
+    "id": 2,
+    "question": "Which year did Singapore gain full independence?",
+    "options": ["1959", "1963", "1965"],
+    "answer": "1965",
+    "hint": "It happened after separation from Malaysia.",
+    "explanation": "Singapore became fully independent on 9 August 1965 after separating from Malaysia."
+  },
+  {
+    "id": 3,
+    "question": "What is the name of Singapore's iconic half-lion, half-fish statue?",
+    "options": ["Lion Head Symbol", "Merlion", "Singa"],
+    "answer": "Merlion",
+    "hint": "It combines 'mer' (sea) and 'lion'.",
+    "explanation": "The Merlion, designed in 1964, symbolizes Singapore's origin as a fishing village (Singapura = 'Lion City')."
+  },
+  {
+    "id": 4,
+    "question": "Which language is Singapore's national language?",
+    "options": ["English", "Mandarin", "Malay"],
+    "answer": "Malay",
+    "hint": "It appears in the national anthem.",
+    "explanation": "Malay is the national language due to historical and regional ties, though English is the main working language."
+  },
+  {
+    "id": 5,
+    "question": "What does the '.sg' in Singapore websites stand for?",
+    "options": ["Singapore", "Singa", "Sovereign Ground"],
+    "answer": "Singapore",
+    "hint": "It's the standard country code.",
+    "explanation": "'.sg' is Singapore's Internet country code top-level domain (ccTLD), assigned in 1988."
+  },
+  {
+    "id": 6,
+    "question": "What is this iconic Singapore landmark?",
+    "options": ["Merlion", "Lion", "Mermaid"],
+    "answer": "Merlion",
+    "hint": "It has the head of a lion and the body of a fish.",
+    "explanation": "The Merlion is Singapore's official mascot, representing its origins as a fishing village (Singapura = 'Lion City').",
+    "image_url": "static/images/merlion.jpg"
+  }
+]

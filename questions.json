@@ -1,51 +1,74 @@
 [
   {
     "id": 1,
-    "question": "What is the national flower of Singapore?",
-    "options": ["Vanda Miss Joaquim", "Hibiscus", "Lotus"],
-    "answer": "Vanda Miss Joaquim",
-    "hint": "It's a type of orchid named after a Singaporean woman.",
-    "explanation": "The Vanda Miss Joaquim was chosen as Singapore's national flower in 1981 for its resilience and year-round blooming."
+    "question": "[Near Auditorium] In the 'Home' mural (SG50 collaboration), how many shophouses are depicted?",
+    "options": ["4", "6", "8"],
+    "answer": "6",
+    "hint": "Look for a mural showing scenes from Singapore’s past — shophouses, hawkers, and everyday life.",
+    "explanation": "This student–Ritz-Carlton collaboration for SG50 pays tribute to Singapore’s heritage. The collage features shophouses and hawkers like satay sellers and ice kachang pushcarts, plus samsui women."
   },
   {
     "id": 2,
-    "question": "Which year did Singapore gain full independence?",
-    "options": ["1959", "1963", "1965"],
-    "answer": "1965",
-    "hint": "It happened after separation from Malaysia.",
-    "explanation": "Singapore became fully independent on 9 August 1965 after separating from Malaysia."
+    "question": "[Near Auditorium] In 'Crying for help' (2019), what creature is camouflaged to highlight plastic pollution?",
+    "options": ["Alligator", "Otter", "Monitor lizard"],
+    "answer": "Alligator",
+    "hint": "Back entrance of the auditorium (Level 1), near the lift.",
+    "explanation": "The work camouflages an alligator using trash imagery to warn about plastic waste’s impact on nature. Artwork credit: 'Crying for help', Ong Jing Ru Cheryl, 2019."
   },
   {
     "id": 3,
-    "question": "What is the name of Singapore's iconic half-lion, half-fish statue?",
-    "options": ["Lion Head Symbol", "Merlion", "Singa"],
-    "answer": "Merlion",
-    "hint": "It combines 'mer' (sea) and 'lion'.",
-    "explanation": "The Merlion, designed in 1964, symbolizes Singapore's origin as a fishing village (Singapura = 'Lion City')."
+    "question": "[Near Auditorium] At the gateway of Nanyang, what is the title of Han Sai Por’s sculpture?",
+    "options": ["Family", "Roots", "Harmony"],
+    "answer": "Family",
+    "hint": "By the red brick entrance near the garden; the artist taught AEP at NYGH.",
+    "explanation": "Family (1993) by Han Sai Por — one of Singapore’s leading sculptors and a former AEP teacher at NYGH — reflects nature’s forms through calm, organic shapes."
   },
   {
     "id": 4,
-    "question": "Which language is Singapore's national language?",
-    "options": ["English", "Mandarin", "Malay"],
-    "answer": "Malay",
-    "hint": "It appears in the national anthem.",
-    "explanation": "Malay is the national language due to historical and regional ties, though English is the main working language."
+    "question": "[Science Block] What is the title of the artwork that studies facial expression beyond words?",
+    "options": ["Expression", "Emotion", "Faces"],
+    "answer": "Expression",
+    "hint": "Find it in the Science Block — a study of the many faces we wear.",
+    "explanation": "Expression (2021) by Ke Shuwen explores emotion and identity through expressions without relying on words."
   },
   {
     "id": 5,
-    "question": "What does the '.sg' in Singapore websites stand for?",
-    "options": ["Singapore", "Singa", "Sovereign Ground"],
-    "answer": "Singapore",
-    "hint": "It's the standard country code.",
-    "explanation": "'.sg' is Singapore's Internet country code top-level domain (ccTLD), assigned in 1988."
+    "question": "[Science Block • Koi Pond] Han Sai Por’s stone work by the koi pond resembles what?",
+    "options": ["A cluster of tropical fruit", "Stacked river stones", "A lotus flower"],
+    "answer": "A cluster of tropical fruit",
+    "hint": "Near the koi pond — rounded organic forms in stone.",
+    "explanation": "Tropical Fruit (1995) celebrates abundance and renewal. Rounded forms echo seeds/fruit, symbolising growth and regeneration."
   },
   {
     "id": 6,
-    "question": "What is this iconic Singapore landmark?",
-    "options": ["Merlion", "Lion", "Mermaid"],
-    "answer": "Merlion",
-    "hint": "It has the head of a lion and the body of a fish.",
-    "explanation": "The Merlion is Singapore's official mascot, representing its origins as a fishing village (Singapura = 'Lion City').",
-    "image_url": "static/images/merlion.jpg"
+    "question": "[Science Block • Koi Pond] Identify the fragrant plant by the koi pond that’s used in local desserts.",
+    "options": ["Pandan", "Lemongrass", "Mint"],
+    "answer": "Pandan",
+    "hint": "You might smell it before you see it — long, blade-like leaves by the pond’s edge.",
+    "explanation": "Pandan leaves are commonly used to infuse fragrance into local desserts and rice."
+  },
+  {
+    "id": 7,
+    "question": "[Level 4] This student artwork reimagines a work by Chua Mia Tee. Which painting inspired it?",
+    "options": ["Portable Cinema", "National Language Class", "Epic Poem of Malaya"],
+    "answer": "Portable Cinema",
+    "hint": "A nostalgic piece about storytelling on wheels.",
+    "explanation": "Chua Mia Tee (b. 1931) is a celebrated Nanyang artist known for realistic scenes of local life. 'Portable Cinema' reflects everyday people, community, and identity."
+  },
+  {
+    "id": 8,
+    "question": "[Level 4] 'The Egg Seller’s Daughter' by Teo Bei Lin is made primarily of what material?",
+    "options": ["Egg cartons", "Newspaper collage", "Wooden blocks"],
+    "answer": "Egg cartons",
+    "hint": "The material links to the artist’s family trade.",
+    "explanation": "The work uses painted egg cartons to honour the artist’s parents’ labour. It also references Pointillism — many small dabs/dots forming an image."
+  },
+  {
+    "id": 9,
+    "question": "[SPR] Which Han Sai Por sculpture mimics roots and vines, symbolising growth?",
+    "options": ["Sprouting", "Seed", "Germination"],
+    "answer": "Sprouting",
+    "hint": "Created by Han Sai Por (AEP pioneer); located in the SPR area.",
+    "explanation": "Sprouting (1995) captures vitality with organic stone forms emerging from the earth — growth, renewal, and life’s continuous cycle."
   }
 ]
