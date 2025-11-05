@@ -223,8 +223,9 @@ def finalize_quiz(chat_id: int) -> None:
         elapsed = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
         duration_line = f"\n⏱️ Time: <b>{_fmt_dur(elapsed)}</b>"
 
+    team = sess.get("team_name") or "Adventurers"
     finish = (
-        f"🏁 <b>Hunt complete!</b>\n\n"
+        f"🏁 <b>{team}</b> — <b>Hunt complete!</b>\n\n"
         f"Score: <b>{score}</b> / <b>{total}</b>"
         f"{duration_line}\n\n"
         "Type <b>START</b> to play again."
@@ -258,8 +259,7 @@ def telegram_webhook() -> Any:
                 sess = ensure_session(int(chat_id))
                 sess["state"] = None  # entering quiz
                 sess["index"] = 0
-                sess["started_at"] = time.time()
-                # Show intro image + themes message before first question
+                # Do NOT start timer yet; show intro + Start Timer button
                 try:
                     send_photo_auto(int(chat_id), "static/images/introduction_of_themes.png")
                 except Exception:
@@ -274,7 +274,15 @@ def telegram_webhook() -> Any:
                     "Each location contains a hidden clue, symbol, or artwork waiting to be discovered."
                 )
                 send_message(int(chat_id), themes_msg)
-                time.sleep(3)
+                # Show Start Timer button and wait
+                sess["state"] = "awaiting_timer"
+                timer_kb = build_inline_keyboard(["Start Timer"])
+                send_message(int(chat_id), "🕒 <b>When you’re ready, press Start Timer.</b>", reply_markup=timer_kb)
+                # Do not present the question yet
+            elif str(data).upper() in ("START TIMER", "START_TIMER"):
+                sess = ensure_session(int(chat_id))
+                sess["started_at"] = time.time()
+                sess["state"] = None
                 present_question(int(chat_id))
             else:
                 handle_answer(int(chat_id), str(data))
@@ -344,8 +352,7 @@ def telegram_webhook() -> Any:
             if upper == "READY":
                 sess["state"] = None
                 sess["index"] = 0
-                sess["started_at"] = time.time()
-                # Show intro image + themes message before first question
+                # Show intro image + themes message and then wait for Start Timer
                 try:
                     send_photo_auto(int(chat_id), "static/images/introduction_of_themes.png")
                 except Exception:
@@ -360,8 +367,9 @@ def telegram_webhook() -> Any:
                     "Each location contains a hidden clue, symbol, or artwork waiting to be discovered."
                 )
                 send_message(int(chat_id), themes_msg)
-                time.sleep(3)
-                present_question(int(chat_id))
+                sess["state"] = "awaiting_timer"
+                timer_kb = build_inline_keyboard(["Start Timer"])
+                send_message(int(chat_id), "🕒 <b>When you’re ready, press Start Timer.</b>", reply_markup=timer_kb)
                 return jsonify({"ok": True})
             # Nudge to press READY
             ready_kb = build_inline_keyboard(["READY"])  # re-show button
@@ -379,6 +387,13 @@ def telegram_webhook() -> Any:
                     send_message(int(chat_id), "No hint available for this question.")
             else:
                 send_message(int(chat_id), "You're not in an active quiz. Type START to play.")
+            return jsonify({"ok": True})
+
+        # If waiting for Start Timer and user types it, begin
+        if sess.get("state") == "awaiting_timer" and upper in ("START TIMER", "START_TIMER"):
+            sess["started_at"] = time.time()
+            sess["state"] = None
+            present_question(int(chat_id))
             return jsonify({"ok": True})
 
         # Fallback: if user types an option exactly, accept it
