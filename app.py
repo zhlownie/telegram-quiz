@@ -38,6 +38,9 @@ sessions: Dict[int, Dict[str, Any]] = {}
 # Env
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL")
+# Hint penalty (in seconds) applied when a hint is used; configurable via env
+HINT_PENALTY_SECS = int(os.environ.get("HINT_PENALTY_SECS", "20"))
+HINT_BUTTON_DATA = "__HINT__"
 
 
 def get_base_url() -> str:
@@ -134,14 +137,23 @@ def ensure_session(chat_id: int) -> Dict[str, Any]:
             "team_name": None,
             "state": None,  # 'awaiting_team_name' | 'awaiting_ready' | None
             "started_at": None,  # UNIX timestamp when quiz starts (on READY)
+            "penalty_secs": 0,  # accumulated time penalties (e.g., for hints)
+            "hint_used_indices": [],  # list of question indices where hint already used
         }
         sessions[chat_id] = sess
+    else:
+        # Backfill new fields for existing sessions
+        sess.setdefault("penalty_secs", 0)
+        sess.setdefault("hint_used_indices", [])
     return sess
 
 
-def build_inline_keyboard(options: List[str]) -> Dict[str, Any]:
+def build_inline_keyboard(options: List[str], include_hint: bool = False) -> Dict[str, Any]:
     # One button per row for readability
     keyboard = [[{"text": opt, "callback_data": opt}] for opt in options]
+    if include_hint:
+        # Add a dedicated hint button on its own row
+        keyboard.append([[{"text": "💡 Hint", "callback_data": HINT_BUTTON_DATA}]][0])
     return {"inline_keyboard": keyboard}
 
 
@@ -164,13 +176,40 @@ def present_question(chat_id: int) -> None:
     q = QUESTIONS[idx]
     question_text: str = q["question"]
     options: List[str] = q["options"]
-    reply_markup = build_inline_keyboard(options)
+    reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint")))
     image_url = q.get("image_url")
     if image_url:
         abs_url = make_absolute_image_url(image_url)
         send_photo_with_buttons(chat_id, abs_url, question_text, reply_markup)
     else:
         send_message(chat_id, question_text, reply_markup=reply_markup)
+
+
+def _use_hint_and_reprompt(chat_id: int) -> None:
+    """Apply hint penalty once per question, send hint text, and re-present current question."""
+    sess = ensure_session(chat_id)
+    idx = sess.get("index", 0)
+    if idx >= len(QUESTIONS):
+        send_message(chat_id, "You're not in an active quiz. Type START to play.")
+        return
+    q = QUESTIONS[idx]
+    hint = q.get("hint")
+    if not hint:
+        send_message(chat_id, "No hint available for this question.")
+        return
+
+    # Apply penalty if not already used for this question
+    used_list = sess.get("hint_used_indices", [])
+    if idx not in used_list:
+        sess["penalty_secs"] = int(sess.get("penalty_secs", 0)) + int(HINT_PENALTY_SECS)
+        used_list.append(idx)
+        sess["hint_used_indices"] = used_list
+        send_message(chat_id, f"💡 Hint: {hint}\n(⏱️ +{HINT_PENALTY_SECS}s penalty)")
+    else:
+        send_message(chat_id, f"💡 Hint: {hint}")
+
+    # Re-present the same question (with hint button still available, but no extra penalty)
+    present_question(chat_id)
 
 
 def handle_answer(chat_id: int, selected: str) -> None:
@@ -221,7 +260,10 @@ def finalize_quiz(chat_id: int) -> None:
     duration_line = ""
     if sess.get("started_at"):
         elapsed = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
-        duration_line = f"\n⏱️ Time: <b>{_fmt_dur(elapsed)}</b>"
+        penalties = int(sess.get("penalty_secs", 0))
+        total_elapsed = elapsed + penalties
+        penalty_note = f" (includes +{_fmt_dur(penalties)} for hints)" if penalties > 0 else ""
+        duration_line = f"\n⏱️ Time: <b>{_fmt_dur(total_elapsed)}</b>{penalty_note}"
 
     team = sess.get("team_name") or "Adventurers"
     finish = (
@@ -284,6 +326,8 @@ def telegram_webhook() -> Any:
                 sess["started_at"] = time.time()
                 sess["state"] = None
                 present_question(int(chat_id))
+            elif str(data) == HINT_BUTTON_DATA:
+                _use_hint_and_reprompt(int(chat_id))
             else:
                 handle_answer(int(chat_id), str(data))
         # Always answer callback to remove loading state
@@ -377,16 +421,7 @@ def telegram_webhook() -> Any:
             return jsonify({"ok": True})
 
         if upper == "HINT":
-            sess = ensure_session(int(chat_id))
-            idx = sess["index"]
-            if idx < len(QUESTIONS):
-                hint = QUESTIONS[idx].get("hint")
-                if hint:
-                    send_message(int(chat_id), f"💡 Hint: {hint}")
-                else:
-                    send_message(int(chat_id), "No hint available for this question.")
-            else:
-                send_message(int(chat_id), "You're not in an active quiz. Type START to play.")
+            _use_hint_and_reprompt(int(chat_id))
             return jsonify({"ok": True})
 
         # If waiting for Start Timer and user types it, begin
