@@ -94,6 +94,36 @@ def send_photo(chat_id: int, photo_url: str, caption: str | None = None) -> None
     resp.raise_for_status()
 
 
+def send_photo_auto(chat_id: int, image_path_or_url: str, caption: str | None = None) -> None:
+    """Send a photo by uploading a local file if it exists; otherwise send as URL.
+    This avoids Telegram needing to fetch from a public URL during local dev.
+    """
+    # If already a full URL, just send it
+    if image_path_or_url.startswith(("http://", "https://")):
+        send_photo(chat_id, image_path_or_url, caption=caption)
+        return
+
+    # Resolve local path relative to project root
+    here = os.path.dirname(os.path.abspath(__file__))
+    local_path = os.path.join(here, image_path_or_url.lstrip("/"))
+
+    if os.path.exists(local_path) and os.path.isfile(local_path):
+        url = tg_api("sendPhoto")
+        data: Dict[str, Any] = {"chat_id": chat_id}
+        if caption is not None:
+            data["caption"] = caption
+            data["parse_mode"] = "HTML"
+        with open(local_path, "rb") as f:
+            files = {"photo": f}
+            resp = requests.post(url, data=data, files=files, timeout=30)
+            resp.raise_for_status()
+        return
+
+    # Fallback: build absolute URL and send
+    abs_url = make_absolute_image_url(image_path_or_url)
+    send_photo(chat_id, abs_url, caption=caption)
+
+
 def ensure_session(chat_id: int) -> Dict[str, Any]:
     sess = sessions.get(chat_id)
     if not sess:
@@ -248,10 +278,9 @@ def telegram_webhook() -> Any:
             team_name = text.strip()
             sess["team_name"] = team_name
             sess["state"] = "awaiting_ready"
-            # Show Madam Linden image first
+            # Show Madam Linden image first (upload local if available)
             try:
-                abs_img = make_absolute_image_url("static/images/madam_linden.png")
-                send_photo(int(chat_id), abs_img)
+                send_photo_auto(int(chat_id), "static/images/madam_linden.png")
             except Exception:
                 # If the image fails to send, continue gracefully
                 pass
