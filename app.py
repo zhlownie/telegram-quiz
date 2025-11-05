@@ -133,6 +133,7 @@ def ensure_session(chat_id: int) -> Dict[str, Any]:
             "score": 0,
             "team_name": None,
             "state": None,  # 'awaiting_team_name' | 'awaiting_ready' | None
+            "started_at": None,  # UNIX timestamp when quiz starts (on READY)
         }
         sessions[chat_id] = sess
     return sess
@@ -204,12 +205,35 @@ def finalize_quiz(chat_id: int) -> None:
     sess = ensure_session(chat_id)
     total = len(QUESTIONS)
     score = sess.get("score", 0)
-    send_message(chat_id, f"🏁 Quiz complete! You scored <b>{score}</b> out of <b>{total}</b>.")
-    # Friendly prompt to restart
-    send_message(chat_id, "Type START to play again.")
+    # Compute elapsed time if available and format as mins/secs
+    def _fmt_dur(sec: Any) -> str:
+        try:
+            s = int(max(0, int(float(sec))))
+        except Exception:
+            return "0 secs"
+        m, s = divmod(s, 60)
+        parts: List[str] = []
+        if m > 0:
+            parts.append(f"{m} min{'s' if m != 1 else ''}")
+        parts.append(f"{s} sec{'s' if s != 1 else ''}")
+        return " ".join(parts)
+
+    duration_line = ""
+    if sess.get("started_at"):
+        elapsed = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
+        duration_line = f"\n⏱️ Time: <b>{_fmt_dur(elapsed)}</b>"
+
+    finish = (
+        f"🏁 <b>Hunt complete!</b>\n\n"
+        f"Score: <b>{score}</b> / <b>{total}</b>"
+        f"{duration_line}\n\n"
+        "Type <b>START</b> to play again."
+    )
+    send_message(chat_id, finish)
     # Reset state but keep session dict
     sess["index"] = 0
     sess["score"] = 0
+    sess["started_at"] = None
 
 
 @app.get("/")
@@ -234,6 +258,7 @@ def telegram_webhook() -> Any:
                 sess = ensure_session(int(chat_id))
                 sess["state"] = None  # entering quiz
                 sess["index"] = 0
+                sess["started_at"] = time.time()
                 # Show intro image + themes message before first question
                 try:
                     send_photo_auto(int(chat_id), "static/images/introduction_of_themes.png")
@@ -273,7 +298,7 @@ def telegram_webhook() -> Any:
         upper = text.upper()
         if upper in ("/START", "START"):
             # Reset and begin pre-start flow
-            sessions[int(chat_id)] = {"index": 0, "score": 0, "team_name": None, "state": "awaiting_team_name"}
+            sessions[int(chat_id)] = {"index": 0, "score": 0, "team_name": None, "state": "awaiting_team_name", "started_at": None}
             send_message(
                 int(chat_id),
                 (
@@ -319,6 +344,7 @@ def telegram_webhook() -> Any:
             if upper == "READY":
                 sess["state"] = None
                 sess["index"] = 0
+                sess["started_at"] = time.time()
                 # Show intro image + themes message before first question
                 try:
                     send_photo_auto(int(chat_id), "static/images/introduction_of_themes.png")
