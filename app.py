@@ -219,13 +219,13 @@ def telegram_webhook() -> Any:
             send_message(
                 int(chat_id),
                 (
-                    "Welcome to the NYGH Art Scavenger Hunt!\n\n"
-                    "Get ready to explore, discover hidden gems, and uncover the beauty of art around you.\n\n"
-                    "Before we start, here are some quick tips:\n\n"
-                    "- If you run into any issues, message us on Telegram.\n"
-                    "- Please don’t share any sensitive information here as this chat may be saved for quality and improvement purposes.\n\n"
-                    "Lastly, what’s your team’s name?\n\n"
-                    "Type it below to begin!"
+                    "<b>Welcome to the NYGH Art Scavenger Hunt!</b>\n\n"
+                    "Get ready to <b>explore</b>, discover hidden gems, and uncover the beauty of art around you.\n\n"
+                    "<b>Before we start, quick tips:</b>\n\n"
+                    "• If you run into any issues, message us on Telegram.\n"
+                    "• Please don’t share any sensitive information here as this chat may be saved for quality and improvement purposes.\n\n"
+                    "<b>What’s your team’s name?</b>\n\n"
+                    "<i>Type it below to begin!</i>"
                 )
             )
             return jsonify({"ok": True})
