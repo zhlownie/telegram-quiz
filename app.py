@@ -1,4 +1,5 @@
 import os
+import time
 import json
 from typing import Dict, Any, List
 
@@ -233,7 +234,22 @@ def telegram_webhook() -> Any:
                 sess = ensure_session(int(chat_id))
                 sess["state"] = None  # entering quiz
                 sess["index"] = 0
-                # Kick off the first question
+                # Show intro image + themes message before first question
+                try:
+                    send_photo_auto(int(chat_id), "static/images/introduction_of_themes.png")
+                except Exception:
+                    pass
+                themes_msg = (
+                    "<i>“Seek what others overlook. The answers lie where art and memory intertwine.”</i>\n\n"
+                    "You will travel through different <b>Art Zones</b>, each representing the four NYGH themes:\n\n"
+                    "• <b>Belonging</b>\n"
+                    "• <b>Discovering</b>\n"
+                    "• <b>Serving</b>\n"
+                    "• <b>Leading</b>\n\n"
+                    "Each location contains a hidden clue, symbol, or artwork waiting to be discovered."
+                )
+                send_message(int(chat_id), themes_msg)
+                time.sleep(3)
                 present_question(int(chat_id))
             else:
                 handle_answer(int(chat_id), str(data))
@@ -303,6 +319,22 @@ def telegram_webhook() -> Any:
             if upper == "READY":
                 sess["state"] = None
                 sess["index"] = 0
+                # Show intro image + themes message before first question
+                try:
+                    send_photo_auto(int(chat_id), "static/images/introduction_of_themes.png")
+                except Exception:
+                    pass
+                themes_msg = (
+                    "<i>“Seek what others overlook. The answers lie where art and memory intertwine.”</i>\n\n"
+                    "You will travel through different <b>Art Zones</b>, each representing the four NYGH themes:\n\n"
+                    "• <b>Belonging</b>\n"
+                    "• <b>Discovering</b>\n"
+                    "• <b>Serving</b>\n"
+                    "• <b>Leading</b>\n\n"
+                    "Each location contains a hidden clue, symbol, or artwork waiting to be discovered."
+                )
+                send_message(int(chat_id), themes_msg)
+                time.sleep(3)
                 present_question(int(chat_id))
                 return jsonify({"ok": True})
             # Nudge to press READY
