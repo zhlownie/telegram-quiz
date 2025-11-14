@@ -17,8 +17,10 @@ def load_questions() -> List[Dict[str, Any]]:
     path = os.path.join(here, "questions.json")
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
-    # Basic validation: exactly 3 options, answer must match an option
+    # Basic validation for visible questions only: exactly 3 options, answer must match an option
     for i, q in enumerate(data):
+        if not q.get("display_question", True):
+            continue
         opts = q.get("options", [])
         if len(opts) != 3:
             raise ValueError(f"Question {i+1} must have exactly 3 options, got {len(opts)}")
@@ -58,6 +60,11 @@ def tg_api(method: str) -> str:
     if not TELEGRAM_BOT_TOKEN:
         raise RuntimeError("Missing TELEGRAM_BOT_TOKEN env var")
     return f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/{method}"
+
+
+def get_active_questions() -> List[Dict[str, Any]]:
+    """Return only questions marked for display (default True)."""
+    return [q for q in QUESTIONS if q.get("display_question", True)]
 
 
 def send_message(chat_id: int, text: str, reply_markup: Dict[str, Any] | None = None) -> None:
@@ -170,10 +177,11 @@ def make_absolute_image_url(image_url: str) -> str:
 def present_question(chat_id: int) -> None:
     sess = ensure_session(chat_id)
     idx = sess["index"]
-    if idx >= len(QUESTIONS):
+    active = get_active_questions()
+    if idx >= len(active):
         finalize_quiz(chat_id)
         return
-    q = QUESTIONS[idx]
+    q = active[idx]
 
     # 1) Show optional question image first (no buttons)
     q_img = q.get("question_image") or q.get("image_url")
@@ -204,10 +212,11 @@ def _use_hint_and_reprompt(chat_id: int) -> None:
     """Apply hint penalty once per question, send hint text, and re-present current question."""
     sess = ensure_session(chat_id)
     idx = sess.get("index", 0)
-    if idx >= len(QUESTIONS):
+    active = get_active_questions()
+    if idx >= len(active):
         send_message(chat_id, "You're not in an active quiz. Type START to play.")
         return
-    q = QUESTIONS[idx]
+    q = active[idx]
     hint = q.get("hint")
     if not hint:
         send_message(chat_id, "No hint available for this question.")
@@ -223,10 +232,11 @@ def _use_hint_and_reprompt(chat_id: int) -> None:
 def handle_answer(chat_id: int, selected: str) -> None:
     sess = ensure_session(chat_id)
     idx = sess["index"]
-    if idx >= len(QUESTIONS):
+    active = get_active_questions()
+    if idx >= len(active):
         finalize_quiz(chat_id)
         return
-    q = QUESTIONS[idx]
+    q = active[idx]
     correct = q["answer"]
     is_correct = selected == correct
     if is_correct:
@@ -249,7 +259,7 @@ def handle_answer(chat_id: int, selected: str) -> None:
 
     # Next question or finish
     sess["index"] += 1
-    if sess["index"] < len(QUESTIONS):
+    if sess["index"] < len(active):
         present_question(chat_id)
     else:
         finalize_quiz(chat_id)
@@ -257,7 +267,7 @@ def handle_answer(chat_id: int, selected: str) -> None:
 
 def finalize_quiz(chat_id: int) -> None:
     sess = ensure_session(chat_id)
-    total = len(QUESTIONS)
+    total = len(get_active_questions())
     score = sess.get("score", 0)
     # Compute elapsed time if available and format as mins/secs
     def _fmt_dur(sec: Any) -> str:
@@ -443,11 +453,12 @@ def telegram_webhook() -> Any:
             present_question(int(chat_id))
             return jsonify({"ok": True})
 
-        # Fallback: if user types an option exactly, accept it
+        # Fallback: if user types an option exactly, accept it (visible questions only)
         if text:
             idx = sess["index"]
-            if idx < len(QUESTIONS):
-                options = QUESTIONS[idx]["options"]
+            active = get_active_questions()
+            if idx < len(active):
+                options = active[idx]["options"]
                 if text in options:
                     handle_answer(int(chat_id), text)
                     return jsonify({"ok": True})
