@@ -85,17 +85,17 @@
   },  
   {
     "id": 6.0,
-    "question_image": "static/images/1a_home.jpg",    
-    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
-    "question": "Identify the fragrant plant by the koi pond that’s used in local desserts.",
-    "options": ["Pandan", "Lemongrass", "Mint"],
-    "answer": "Pandan",
-    "hint": "You might smell it before you see it — long, blade-like leaves by the pond’s edge.",
+    "question_image": "",    
+    "intro": "",
+    "question": "",
+    "options": [],
+    "answer": "",
+    "hint": "",
     "explanation_images": [],
     "explanations": [
-      "Pandan leaves are commonly used to infuse fragrance into local desserts and rice."
+      ""
     ],
-    "is_visible": true
+    "is_visible": false
   },
   {
     "id": 7.0,
@@ -109,7 +109,7 @@
     "explanations": [
       "Chua Mia Tee (b. 1931) is a celebrated Nanyang artist known for realistic scenes of local life. 'Portable Cinema' reflects everyday people, community, and identity."
     ],
-    "is_visible": true
+    "is_visible": false
   },
   {
     "id": 8.0,
@@ -123,19 +123,23 @@
     "explanations": [
       "The work uses painted egg cartons to honour the artist’s parents’ labour. It also references Pointillism — many small dabs/dots forming an image."
     ],
-    "is_visible": true
+    "is_visible": false
   },
   {
     "id": 9.0,
-    "question_image": "static/images/1a_home.jpg",    
-    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
-    "question": "Which Han Sai Por sculpture mimics roots and vines, symbolising growth?",
+    "question_image": "static/images/9a_sprouting_clue.jpg",    
+    "intro": "I mimic the flow of roots and vines,\nThough I’m still, my shape entwines.\nA teacher once shaped minds and stone,\nFind her work where art has grown.",
+    "question": "What is the name of the artwork?",
     "options": ["Sprouting", "Seed", "Germination"],
     "answer": "Sprouting",
-    "hint": "Created by Han Sai Por (AEP pioneer); located in the SPR area.",
-    "explanation_images": [],
+    "hint": "We have another artwork created by Han Sai Por, who once taught at NYGH’s Art Elective Programme — this sculpture celebrates her love for organic, natural forms.",
+    "explanation_images": [
+      "static/images/9_sprouting_han_sai_por.jpg",
+      "static/images/9b_artist_fun fact.png"
+    ],
     "explanations": [
-      "Sprouting (1995) captures vitality with organic stone forms emerging from the earth — growth, renewal, and life’s continuous cycle."
+      "Sprouting, Han Sai Por, 1995\n\nSprouting by Han Sai Por captures the vitality of nature through organic, curved stone forms that seem to emerge from the earth, symbolizing growth, renewal, and the continuous cycle of life.",
+      "Did you know? Han Sai Por’s sculpture 20 Tonnes, located outside the National Museum of Singapore, was carved from a single huge block of granite. It’s designed so visitors can walk between its towering slabs and feel the immense weight and presence of the stone."
     ],
     "is_visible": true
   }
