@@ -257,9 +257,7 @@ def _use_hint_and_reprompt(chat_id: int) -> None:
 
     # Penalties disabled: just show hint
     send_message(chat_id, f"💡 Hint: {hint}")
-
-    # Re-present the same question (with hint button still available, but no extra penalty)
-    present_question(chat_id)
+    # Do not re-present the question; users can answer from the existing prompt
 
 
 def handle_answer(chat_id: int, selected: str) -> None:
