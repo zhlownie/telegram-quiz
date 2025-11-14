@@ -64,6 +64,15 @@ def tg_api(method: str) -> str:
     return f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/{method}"
 
 
+def send_chat_action(chat_id: int, action: str = "typing") -> None:
+    """Show a chat action (e.g., typing) to make short pauses feel intentional."""
+    try:
+        requests.post(tg_api("sendChatAction"), json={"chat_id": chat_id, "action": action}, timeout=5)
+    except Exception:
+        # Non-fatal if this fails
+        pass
+
+
 def to_list(value: Any) -> List[str]:
     """Normalize a value into a list of non-empty strings.
     Accepts list[str] or str; returns [] for None/empty.
@@ -213,18 +222,20 @@ def present_question(chat_id: int) -> None:
             # Continue even if image fails
             print(f"[present_question] image send failed: {e}", flush=True)
 
-    # 2) Send intro + question with answer buttons
+    # 2) Send header + intro + question with answer buttons
     question_text: str = q["question"]
     bold_q = f"<b>{question_text}</b>"
+    total = len(active)
+    header = f"<b>Question {idx + 1}/{total}</b>"
     intro = q.get("intro")
     if intro:
         lines = str(intro).splitlines()
         if q.get("intro_blue"):
             lines = [f"🔷 {ln}" if ln.strip() else "" for ln in lines]
         intro_block = "<i>" + "\n".join(lines) + "</i>"
-        body = f"{intro_block}\n\n{bold_q}"
+        body = f"{header}\n\n{intro_block}\n\n{bold_q}"
     else:
-        body = bold_q
+        body = f"{header}\n\n{bold_q}"
     options: List[str] = q["options"]
     reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint")))
     send_message(chat_id, body, reply_markup=reply_markup)
@@ -280,9 +291,11 @@ def handle_answer(chat_id: int, selected: str) -> None:
         if i < len(txt_list):
             send_message(chat_id, f"ℹ️ {txt_list[i]}")
 
-    # Next question or finish
+    # Next question or finish (pause briefly before next)
     sess["index"] += 1
     if sess["index"] < len(active):
+        send_chat_action(chat_id, "typing")
+        time.sleep(1)
         present_question(chat_id)
     else:
         finalize_quiz(chat_id)
