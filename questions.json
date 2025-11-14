@@ -8,18 +8,18 @@
     "options": ["4", "6", "8"],
     "answer": "6",
     "hint": "Look for a mural that captures scenes from Singapore’s past — shophouses, hawkers, and everyday life. It’s a colourful window into our nation’s heritage, created by NYGH AEP students together with Ritz-Carlton for SG50.",
-    "explanation_image": "",    
+    "explanation_image": "static/images/1a_home.jpg",    
     "explanation": "This artwork is called “Home” . It is a collaboration between Ritz-Carlton, Millenia Singapore and NYGH AEP students in order to commemorate Singapore’s 50th birthday. This painting is a tribute to the rich colonial heritage of Singapore. This painting is a collage of different cultures’ streets in the past. Can you spot the Malay street vendors selling satay and the tarik? There are also Chinese hawkers selling ice kachang on a push cart and samsui women in their trademark red cloth hats and coolies."
   },
   {
     "id": 2,
     "question_image": "static/images/2_crying_for_help.jpg",    
-    "intro": "I look like an animal hiding in the wild, \nBut I’m really trash, not nature’s child.\nA plastic danger in disguise I stay,\nCan you find me and see what I say?",
+    "intro": "I look like an animal hiding in the wild,\nBut I’m really trash, not nature’s child.\nA plastic danger in disguise I stay,\nCan you find me and see what I say?",
     "question": "What creature is camouflaged within this artwork, and what message does the artist convey about our relationship with the environment?",
     "options": ["Alligator", "Otter", "Monitor lizard"],
     "answer": "Alligator",
     "hint": "Back entrance of the auditorium (Level 1), near the lift.",
-    "explanation_image": "",    
+    "explanation_image": "static/images/2_crying_for_help.jpg",
     "explanation": "The work camouflages an alligator using trash imagery to warn about plastic waste’s impact on nature. Artwork credit: 'Crying for help', Ong Jing Ru Cheryl, 2019."
   },
   {
