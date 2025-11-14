@@ -174,15 +174,23 @@ def present_question(chat_id: int) -> None:
         finalize_quiz(chat_id)
         return
     q = QUESTIONS[idx]
+
+    # 1) Show optional question image first (no buttons)
+    q_img = q.get("question_image") or q.get("image_url")
+    if q_img:
+        try:
+            send_photo_auto(chat_id, q_img)
+        except Exception as e:
+            # Continue even if image fails
+            print(f"[present_question] image send failed: {e}", flush=True)
+
+    # 2) Send intro + question with answer buttons
     question_text: str = q["question"]
+    intro = q.get("intro")
+    body = f"<i>{intro}</i>\n\n{question_text}" if intro else question_text
     options: List[str] = q["options"]
     reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint")))
-    image_url = q.get("image_url")
-    if image_url:
-        abs_url = make_absolute_image_url(image_url)
-        send_photo_with_buttons(chat_id, abs_url, question_text, reply_markup)
-    else:
-        send_message(chat_id, question_text, reply_markup=reply_markup)
+    send_message(chat_id, body, reply_markup=reply_markup)
 
 
 def _use_hint_and_reprompt(chat_id: int) -> None:
@@ -220,7 +228,14 @@ def handle_answer(chat_id: int, selected: str) -> None:
     else:
         send_message(chat_id, f"❌ Not quite. The correct answer is: <b>{correct}</b>")
 
-    # Optional explanation
+    # 3) Optional explanation image then explanation text
+    expl_img = q.get("explanation_image")
+    if expl_img:
+        try:
+            send_photo_auto(chat_id, expl_img)
+        except Exception as e:
+            print(f"[handle_answer] explanation image failed: {e}", flush=True)
+
     explanation = q.get("explanation")
     if explanation:
         send_message(chat_id, f"ℹ️ {explanation}")
