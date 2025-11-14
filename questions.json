@@ -3,7 +3,6 @@
     "id": 1,
     "question_image": "",    
     "intro": "Streets of old, where stories blend,\nCultures meet, traditions mend.\nRed hats, sweet ice, and satay’s flame,\nA nation’s roots within this frame.\nCreated by hands both young and wise,\nFind this “home” where heritage lies.",
-    "intro_blue": false,
     "question": "How many shophouses can you spot in the painting?",
     "options": ["4", "6", "8"],
     "answer": "6",
@@ -13,7 +12,7 @@
   },
   {
     "id": 2,
-    "question_image": "static/images/2_crying_for_help.jpg",    
+    "question_image": "",    
     "intro": "I look like an animal hiding in the wild,\nBut I’m really trash, not nature’s child.\nA plastic danger in disguise I stay,\nCan you find me and see what I say?",
     "question": "What creature is camouflaged within this artwork, and what message does the artist convey about our relationship with the environment?",
     "options": ["Alligator", "Otter", "Monitor lizard"],
@@ -24,7 +23,7 @@
   },
   {
     "id": 3,
-    "question_image": "static/images/1a_home.jpg",    
+    "question_image": "",    
     "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
     "question": "At the gateway of Nanyang, what is the title of Han Sai Por’s sculpture?",
     "options": ["Family", "Roots", "Harmony"],
