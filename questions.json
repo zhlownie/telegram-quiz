@@ -1,9 +1,9 @@
 [
   {
     "id": 1,
-    "question_image": "static/images/1a_home.jpg",    
+    "question_image": "",    
     "intro": "Streets of old, where stories blend,\nCultures meet, traditions mend.\nRed hats, sweet ice, and satay’s flame,\nA nation’s roots within this frame.\nCreated by hands both young and wise,\nFind this “home” where heritage lies.",
-    "intro_blue": true,
+    "intro_blue": false,
     "question": "How many shophouses can you spot in the painting?",
     "options": ["4", "6", "8"],
     "answer": "6",
