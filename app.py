@@ -64,6 +64,20 @@ def tg_api(method: str) -> str:
     return f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/{method}"
 
 
+def to_list(value: Any) -> List[str]:
+    """Normalize a value into a list of non-empty strings.
+    Accepts list[str] or str; returns [] for None/empty.
+    """
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(v) for v in value if str(v).strip()]
+    if isinstance(value, str):
+        v = value.strip()
+        return [v] if v else []
+    return []
+
+
 def get_active_questions() -> List[Dict[str, Any]]:
     """Return only questions marked visible (default True). Supports legacy key as fallback."""
     active: List[Dict[str, Any]] = []
@@ -252,17 +266,18 @@ def handle_answer(chat_id: int, selected: str) -> None:
     else:
         send_message(chat_id, f"❌ Not quite. The correct answer is: <b>{correct}</b>")
 
-    # 3) Optional explanation image then explanation text
-    expl_img = q.get("explanation_image")
-    if expl_img:
-        try:
-            send_photo_auto(chat_id, expl_img)
-        except Exception as e:
-            print(f"[handle_answer] explanation image failed: {e}", flush=True)
-
-    explanation = q.get("explanation")
-    if explanation:
-        send_message(chat_id, f"ℹ️ {explanation}")
+    # 3) Support multi-step explanations: images/text arrays with fallback to single values
+    img_list = to_list(q.get("explanation_images") or q.get("explanation_image"))
+    txt_list = to_list(q.get("explanations") or q.get("explanation"))
+    steps = max(len(img_list), len(txt_list))
+    for i in range(steps):
+        if i < len(img_list):
+            try:
+                send_photo_auto(chat_id, img_list[i])
+            except Exception as e:
+                print(f"[handle_answer] explanation image failed: {e}", flush=True)
+        if i < len(txt_list):
+            send_message(chat_id, f"ℹ️ {txt_list[i]}")
 
     # Next question or finish
     sess["index"] += 1
