@@ -45,6 +45,8 @@ RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL")
 # Hint penalty currently disabled; keep env for future use if needed
 HINT_PENALTY_SECS = int(os.environ.get("HINT_PENALTY_SECS", "20"))
 HINT_BUTTON_DATA = "__HINT__"
+NEXT_BUTTON_DATA = "__NEXT__"
+NEXT_BUTTON_LABEL = "Next Question ▶️"
 
 
 def get_base_url() -> str:
@@ -176,12 +178,14 @@ def ensure_session(chat_id: int) -> Dict[str, Any]:
             "started_at": None,  # UNIX timestamp when quiz starts (on READY)
             "penalty_secs": 0,  # (unused now) accumulated time penalties
             "hint_used_indices": [],  # (unused now) indices where hint already used
+            "awaiting_next": False,  # require Next before moving on
         }
         sessions[chat_id] = sess
     else:
         # Backfill new fields for existing sessions
         sess.setdefault("penalty_secs", 0)
         sess.setdefault("hint_used_indices", [])
+        sess.setdefault("awaiting_next", False)
     return sess
 
 
@@ -192,6 +196,10 @@ def build_inline_keyboard(options: List[str], include_hint: bool = False) -> Dic
         # Add a dedicated hint button on its own row
         keyboard.append([[{"text": "💡 Hint", "callback_data": HINT_BUTTON_DATA}]][0])
     return {"inline_keyboard": keyboard}
+
+
+def build_next_keyboard() -> Dict[str, Any]:
+    return {"inline_keyboard": [[{"text": NEXT_BUTTON_LABEL, "callback_data": NEXT_BUTTON_DATA}]]}
 
 
 def make_absolute_image_url(image_url: str) -> str:
@@ -206,6 +214,7 @@ def make_absolute_image_url(image_url: str) -> str:
 
 def present_question(chat_id: int) -> None:
     sess = ensure_session(chat_id)
+    sess["awaiting_next"] = False
     idx = sess["index"]
     active = get_active_questions()
     if idx >= len(active):
@@ -289,14 +298,9 @@ def handle_answer(chat_id: int, selected: str) -> None:
         if i < len(txt_list):
             send_message(chat_id, f"ℹ️ {txt_list[i]}")
 
-    # Next question or finish (pause briefly before next)
-    sess["index"] += 1
-    if sess["index"] < len(active):
-        send_chat_action(chat_id, "typing")
-        time.sleep(1)
-        present_question(chat_id)
-    else:
-        finalize_quiz(chat_id)
+    # Require explicit Next button to advance
+    sess["awaiting_next"] = True
+    send_message(chat_id, "When you’re ready, press <b>Next Question</b>.", reply_markup=build_next_keyboard())
 
 
 def finalize_quiz(chat_id: int) -> None:
@@ -382,10 +386,38 @@ def telegram_webhook() -> Any:
                 sess["started_at"] = time.time()
                 sess["state"] = None
                 present_question(int(chat_id))
+            elif str(data).upper() in ("START TIMER", "START_TIMER"):
+                sess = ensure_session(int(chat_id))
+                sess["started_at"] = time.time()
+                sess["state"] = None
+                present_question(int(chat_id))
+            elif str(data) == NEXT_BUTTON_DATA:
+                sess = ensure_session(int(chat_id))
+                active = get_active_questions()
+                if not sess.get("awaiting_next"):
+                    # Ignore stray NEXT presses
+                    try:
+                        requests.post(tg_api("answerCallbackQuery"), json={"callback_query_id": cq.get("id")}, timeout=10)
+                    except Exception:
+                        pass
+                    return jsonify({"ok": True})
+                sess["awaiting_next"] = False
+                sess["index"] += 1
+                if sess["index"] < len(active):
+                    send_chat_action(int(chat_id), "typing")
+                    time.sleep(1)
+                    present_question(int(chat_id))
+                else:
+                    finalize_quiz(int(chat_id))
             elif str(data) == HINT_BUTTON_DATA:
                 _use_hint_and_reprompt(int(chat_id))
             else:
-                handle_answer(int(chat_id), str(data))
+                # If awaiting Next, block more answers and nudge
+                sess = ensure_session(int(chat_id))
+                if sess.get("awaiting_next"):
+                    send_message(int(chat_id), "You’ve already answered. Press <b>Next Question</b> to continue.")
+                else:
+                    handle_answer(int(chat_id), str(data))
         # Always answer callback to remove loading state
         try:
             requests.post(tg_api("answerCallbackQuery"), json={"callback_query_id": cq.get("id")}, timeout=10)
@@ -480,6 +512,19 @@ def telegram_webhook() -> Any:
             _use_hint_and_reprompt(int(chat_id))
             return jsonify({"ok": True})
 
+        # Typed fallback to NEXT when awaiting next
+        if sess.get("awaiting_next") and upper in ("NEXT", "NEXT QUESTION", "NEXT_QUESTION"):
+            active = get_active_questions()
+            sess["awaiting_next"] = False
+            sess["index"] += 1
+            if sess["index"] < len(active):
+                send_chat_action(int(chat_id), "typing")
+                time.sleep(1)
+                present_question(int(chat_id))
+            else:
+                finalize_quiz(int(chat_id))
+            return jsonify({"ok": True})
+
         # If waiting for Start Timer and user types it, begin
         if sess.get("state") == "awaiting_timer" and upper in ("START TIMER", "START_TIMER"):
             sess["started_at"] = time.time()
@@ -492,6 +537,10 @@ def telegram_webhook() -> Any:
             idx = sess["index"]
             active = get_active_questions()
             if idx < len(active):
+                # If already answered and awaiting next, do not accept more answers; nudge
+                if sess.get("awaiting_next"):
+                    send_message(int(chat_id), "You’ve already answered. Press <b>Next Question</b> to continue.")
+                    return jsonify({"ok": True})
                 options = active[idx]["options"]
                 if text in options:
                     handle_answer(int(chat_id), text)
