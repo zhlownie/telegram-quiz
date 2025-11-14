@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": 1.0,
     "question_image": "",    
     "intro": "Streets of old, where stories blend,\nCultures meet, traditions mend.\nRed hats, sweet ice, and satay’s flame,\nA nation’s roots within this frame.\nCreated by hands both young and wise,\nFind this “home” where heritage lies.",
     "question": "How many shophouses can you spot in the painting?",
@@ -14,7 +14,7 @@
     "is_visible" : true
   },
   {
-    "id": 2,
+    "id": 2.0,
     "question_image": "",    
     "intro": "I look like an animal hiding in the wild,\nBut I’m really trash, not nature’s child.\nA plastic danger in disguise I stay,\nCan you find me and see what I say?",
     "question": "What creature is camouflaged within this artwork, and what message does the artist convey about our relationship with the environment?",
@@ -28,91 +28,112 @@
     "is_visible": true
   },
   {
-    "id": 3,
+    "id": 3.0,
     "question_image": "",    
     "intro": "Three figures stand, tall and near,\nBound by love, they stay sincere.\nFormed by hands that once taught art,\nSeek this sculpture close to the school’s heart.",
     "question": "At the gateway of Nanyang, what is the title of Han Sai Por’s sculpture?",
     "options": ["Family", "Roots", "Harmony"],
     "answer": "Family",
     "hint": "By the red brick entrance near the garden; the artist taught AEP at NYGH.",
+    "explanation_images": ["static/images/3_family_han_sai_por.jpg", "static/images/3a_han_sai_por_artist_intro.png"],
     "explanations": [
-      "Family (1993) by Han Sai Por — one of Singapore’s leading sculptors and a former AEP teacher at NYGH — reflects nature’s forms through calm, organic shapes."
+      "Family, Han Sai Por, 1993",
+      "Han Sai Por was one of the pioneer teachers for the AEP at NYGH from around 1984 (when the AEP started) for approximately three years.\n\nHan Sai Por is one of Singapore’s leading sculptors, known for her nature-inspired and organic forms. Her works often resemble seeds, roots, or flowing natural shapes, carved in stone or cast in bronze to express growth, strength, and harmony with the environment. She uses simple yet powerful forms to reflect the beauty and resilience of nature."
     ],
     "is_visible": true
   },
   {
-    "id": 4,
-    "question_image": "static/images/1a_home.jpg",    
+    "id": 4.0,
+    "question_image": "",    
     "intro": "Find me in the Science Block, where discovery meets emotion. This artwork explores the many faces we wear and the feelings we hide beneath a study of “expression” beyond words.",
-    "question": "What is the title of the artwork that studies facial expression beyond words?",
+    "question": "Choose one of the faces and mimic its expression. What emotion do you think the artist wanted to convey, and why?",
     "options": ["Expression", "Emotion", "Faces"],
     "answer": "Expression",
     "hint": "Find it in the Science Block — a study of the many faces we wear.",
+    "explanation_images": ["static/images/4_expression_keshuwen.jpg"],
     "explanations": [
-      "Expression (2021) by Ke Shuwen explores emotion and identity through expressions without relying on words."
+      "Expression, 2021, Ke Shuwen"
     ],
     "is_visible": true
   },
   {
-    "id": 5,
-    "question_image": "static/images/1a_home.jpg",    
+    "id": 5.1,
+    "question_image": "",    
     "intro": "I rest in water, round and bright,\nA cluster of life in the morning light.\nNot for eating, but for view —\nA fruit of stone, in nature’s hue.",
-    "question": "Han Sai Por’s stone work by the koi pond resembles what?",
+    "question": "What does this sculpture resemble, and how does it reflect the artist’s love for nature?",
     "options": ["A cluster of tropical fruit", "Stacked river stones", "A lotus flower"],
     "answer": "A cluster of tropical fruit",
     "hint": "Near the koi pond — rounded organic forms in stone.",
+    "explanation_images": ["static/images/5_1_tropical_fruit_han_sai_por.jpg"],
     "explanations": [
-      "Tropical Fruit (1995) celebrates abundance and renewal. Rounded forms echo seeds/fruit, symbolising growth and regeneration."
+      "Tropical Fruit, Han Sai Por, 1995",
+      "Tropical Fruit by Han Sai Por is a stone sculpture that celebrates the abundance and vitality of nature in the tropics. With its rounded, organic form resembling a cluster of seeds or fruit, the artwork reflects Han’s fascination with growth and regeneration — symbols of life and renewal that echo Singapore’s natural environment and evolving landscape."
     ],
     "is_visible": true
   },
   {
-    "id": 6,
+    "id": 5.2,
+    "question_image": "static/images/5_2_tropical_fruit_han_sai_por.jpg",    
+    "intro": "",
+    "question": "Bonus Question: Can you identify the lush green plant shown in the photo, growing in or near the edge of the school’s koi pond?",
+    "options": ["Pandan", "Lemongrass", "Mint"],
+    "answer": "Pandan",
+    "hint": "The scent You might smell it before you see it! Look for long, blade-like leaves growing by the koi pond’s edge — a fragrant plant often used in local desserts and rice.",
+    "explanation_images": [],
+    "explanations": [],
+    "is_visible": true
+  },  
+  {
+    "id": 6.0,
     "question_image": "static/images/1a_home.jpg",    
     "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
     "question": "Identify the fragrant plant by the koi pond that’s used in local desserts.",
     "options": ["Pandan", "Lemongrass", "Mint"],
     "answer": "Pandan",
     "hint": "You might smell it before you see it — long, blade-like leaves by the pond’s edge.",
+    "explanation_images": [],
     "explanations": [
       "Pandan leaves are commonly used to infuse fragrance into local desserts and rice."
     ],
     "is_visible": true
   },
   {
-    "id": 7,
+    "id": 7.0,
     "question_image": "static/images/1a_home.jpg",    
     "intro": "Find this nostalgic piece on Level 4, where the past meets the present. It reimagines a local artist’s vision of storytelling, when cinema rolled through the streets instead of playing on screens.",
     "question": "This student artwork reimagines a work by Chua Mia Tee. Which painting inspired it?",
     "options": ["Portable Cinema", "National Language Class", "Epic Poem of Malaya"],
     "answer": "Portable Cinema",
     "hint": "A nostalgic piece about storytelling on wheels.",
+    "explanation_images": [],
     "explanations": [
       "Chua Mia Tee (b. 1931) is a celebrated Nanyang artist known for realistic scenes of local life. 'Portable Cinema' reflects everyday people, community, and identity."
     ],
     "is_visible": true
   },
   {
-    "id": 8,
+    "id": 8.0,
     "question_image": "static/images/1a_home.jpg",    
     "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
     "question": "'The Egg Seller’s Daughter' by Teo Bei Lin is made primarily of what material?",
     "options": ["Egg cartons", "Newspaper collage", "Wooden blocks"],
     "answer": "Egg cartons",
     "hint": "The material links to the artist’s family trade.",
+    "explanation_images": [],
     "explanations": [
       "The work uses painted egg cartons to honour the artist’s parents’ labour. It also references Pointillism — many small dabs/dots forming an image."
     ],
     "is_visible": true
   },
   {
-    "id": 9,
+    "id": 9.0,
     "question_image": "static/images/1a_home.jpg",    
     "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
     "question": "Which Han Sai Por sculpture mimics roots and vines, symbolising growth?",
     "options": ["Sprouting", "Seed", "Germination"],
     "answer": "Sprouting",
     "hint": "Created by Han Sai Por (AEP pioneer); located in the SPR area.",
+    "explanation_images": [],
     "explanations": [
       "Sprouting (1995) captures vitality with organic stone forms emerging from the earth — growth, renewal, and life’s continuous cycle."
     ],
