@@ -298,9 +298,13 @@ def handle_answer(chat_id: int, selected: str) -> None:
         if i < len(txt_list):
             send_message(chat_id, f"ℹ️ {txt_list[i]}")
 
-    # Require explicit Next button to advance
-    sess["awaiting_next"] = True
-    send_message(chat_id, "When you’re ready, press <b>Next Question</b>.", reply_markup=build_next_keyboard())
+    # Advance behavior: if this is the last question, finish; otherwise require Next button
+    if idx + 1 >= len(active):
+        sess["awaiting_next"] = False
+        finalize_quiz(chat_id)
+    else:
+        sess["awaiting_next"] = True
+        send_message(chat_id, "When you’re ready, press <b>Next Question</b>.", reply_markup=build_next_keyboard())
 
 
 def finalize_quiz(chat_id: int) -> None:
