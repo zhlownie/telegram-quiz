@@ -48,6 +48,15 @@ HINT_BUTTON_DATA = "__HINT__"
 NEXT_BUTTON_DATA = "__NEXT__"
 NEXT_BUTTON_LABEL = "Next Question ▶️"
 
+# Admin notifications: set OWNER_CHAT_ID="123456789" or ADMIN_CHAT_IDS="123,456"
+ADMIN_CHAT_IDS: List[int] = []
+_env_admins = (os.environ.get("OWNER_CHAT_ID") or os.environ.get("ADMIN_CHAT_IDS") or "").strip()
+if _env_admins:
+    try:
+        ADMIN_CHAT_IDS = [int(x) for x in _env_admins.replace(" ", "").split(",") if x]
+    except Exception:
+        ADMIN_CHAT_IDS = []
+
 
 def get_base_url() -> str:
     # Prefer explicit env from Render; fallback to request.url_root when available
@@ -111,6 +120,22 @@ def send_message(chat_id: int, text: str, reply_markup: Dict[str, Any] | None = 
         payload["reply_markup"] = reply_markup
     resp = requests.post(tg_api("sendMessage"), json=payload, timeout=10)
     resp.raise_for_status()
+
+
+def notify_admins(text: str) -> None:
+    """Send a notification message to configured admin chat IDs, if any."""
+    if not ADMIN_CHAT_IDS:
+        return
+    for admin_id in ADMIN_CHAT_IDS:
+        try:
+            requests.post(
+                tg_api("sendMessage"),
+                json={"chat_id": admin_id, "text": text, "parse_mode": "HTML"},
+                timeout=10,
+            )
+        except Exception:
+            # Ignore failures to avoid impacting user flow
+            pass
 
 
 def send_photo_with_buttons(chat_id: int, photo_url: str, caption: str, reply_markup: Dict[str, Any]) -> None:
@@ -325,9 +350,10 @@ def finalize_quiz(chat_id: int) -> None:
         return " ".join(parts)
 
     duration_line = ""
+    elapsed_val: float | None = None
     if sess.get("started_at"):
-        elapsed = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
-        duration_line = f"\n⏱️ Time: <b>{_fmt_dur(elapsed)}</b>"
+        elapsed_val = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
+        duration_line = f"\n⏱️ Time: <b>{_fmt_dur(elapsed_val)}</b>"
 
     team = sess.get("team_name") or "Adventurers"
     finish = (
@@ -337,10 +363,20 @@ def finalize_quiz(chat_id: int) -> None:
         "Type <b>START</b> to play again."
     )
     send_message(chat_id, finish)
+
+    # Notify owner/admins of result
+    try:
+        if elapsed_val is not None:
+            notify_admins(f"[{team}] — Hunt complete! Score {score}/{total}; Time {_fmt_dur(elapsed_val)}")
+        else:
+            notify_admins(f"[{team}] — Hunt complete! Score {score}/{total}")
+    except Exception:
+        pass
     # Reset state but keep session dict
     sess["index"] = 0
     sess["score"] = 0
     sess["started_at"] = None
+    sess["awaiting_next"] = False
 
 
 @app.get("/")
