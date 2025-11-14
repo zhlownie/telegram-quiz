@@ -187,7 +187,14 @@ def present_question(chat_id: int) -> None:
     # 2) Send intro + question with answer buttons
     question_text: str = q["question"]
     intro = q.get("intro")
-    body = f"<i>{intro}</i>\n\n{question_text}" if intro else question_text
+    if intro:
+        lines = str(intro).splitlines()
+        if q.get("intro_blue"):
+            lines = [f"🔷 {ln}" if ln.strip() else "" for ln in lines]
+        intro_block = "<i>" + "\n".join(lines) + "</i>"
+        body = f"{intro_block}\n\n{question_text}"
+    else:
+        body = question_text
     options: List[str] = q["options"]
     reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint")))
     send_message(chat_id, body, reply_markup=reply_markup)

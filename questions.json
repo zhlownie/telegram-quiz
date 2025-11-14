@@ -1,74 +1,102 @@
 [
   {
     "id": 1,
-    "question": "[Near Auditorium] In the 'Home' mural (SG50 collaboration), how many shophouses are depicted?",
+    "question_image": "static/images/1a_home.jpg",    
+    "intro": "Streets of old, where stories blend,\nCultures meet, traditions mend.\nRed hats, sweet ice, and satay’s flame,\nA nation’s roots within this frame.\nCreated by hands both young and wise,\nFind this “home” where heritage lies.",
+    "intro_blue": true,
+    "question": "How many shophouses can you spot in the painting?",
     "options": ["4", "6", "8"],
     "answer": "6",
-    "hint": "Look for a mural showing scenes from Singapore’s past — shophouses, hawkers, and everyday life.",
-    "explanation": "This student–Ritz-Carlton collaboration for SG50 pays tribute to Singapore’s heritage. The collage features shophouses and hawkers like satay sellers and ice kachang pushcarts, plus samsui women."
+    "hint": "Look for a mural that captures scenes from Singapore’s past — shophouses, hawkers, and everyday life. It’s a colourful window into our nation’s heritage, created by NYGH AEP students together with Ritz-Carlton for SG50.",
+    "explanation_image": "",    
+    "explanation": "This artwork is called “Home” . It is a collaboration between Ritz-Carlton, Millenia Singapore and NYGH AEP students in order to commemorate Singapore’s 50th birthday. This painting is a tribute to the rich colonial heritage of Singapore. This painting is a collage of different cultures’ streets in the past. Can you spot the Malay street vendors selling satay and the tarik? There are also Chinese hawkers selling ice kachang on a push cart and samsui women in their trademark red cloth hats and coolies."
   },
   {
     "id": 2,
-    "question": "[Near Auditorium] In 'Crying for help' (2019), what creature is camouflaged to highlight plastic pollution?",
+    "question_image": "static/images/2_crying_for_help.jpg",    
+    "intro": "I look like an animal hiding in the wild, \nBut I’m really trash, not nature’s child.\nA plastic danger in disguise I stay,\nCan you find me and see what I say?",
+    "question": "What creature is camouflaged within this artwork, and what message does the artist convey about our relationship with the environment?",
     "options": ["Alligator", "Otter", "Monitor lizard"],
     "answer": "Alligator",
     "hint": "Back entrance of the auditorium (Level 1), near the lift.",
+    "explanation_image": "",    
     "explanation": "The work camouflages an alligator using trash imagery to warn about plastic waste’s impact on nature. Artwork credit: 'Crying for help', Ong Jing Ru Cheryl, 2019."
   },
   {
     "id": 3,
-    "question": "[Near Auditorium] At the gateway of Nanyang, what is the title of Han Sai Por’s sculpture?",
+    "question_image": "static/images/1a_home.jpg",    
+    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "question": "At the gateway of Nanyang, what is the title of Han Sai Por’s sculpture?",
     "options": ["Family", "Roots", "Harmony"],
     "answer": "Family",
     "hint": "By the red brick entrance near the garden; the artist taught AEP at NYGH.",
+    "explanation_image": "",
     "explanation": "Family (1993) by Han Sai Por — one of Singapore’s leading sculptors and a former AEP teacher at NYGH — reflects nature’s forms through calm, organic shapes."
   },
   {
     "id": 4,
-    "question": "[Science Block] What is the title of the artwork that studies facial expression beyond words?",
+    "question_image": "static/images/1a_home.jpg",    
+    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "question": "What is the title of the artwork that studies facial expression beyond words?",
     "options": ["Expression", "Emotion", "Faces"],
     "answer": "Expression",
     "hint": "Find it in the Science Block — a study of the many faces we wear.",
+    "explanation_image": "",
     "explanation": "Expression (2021) by Ke Shuwen explores emotion and identity through expressions without relying on words."
   },
   {
     "id": 5,
-    "question": "[Science Block • Koi Pond] Han Sai Por’s stone work by the koi pond resembles what?",
+    "question_image": "static/images/1a_home.jpg",    
+    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "question": "Han Sai Por’s stone work by the koi pond resembles what?",
     "options": ["A cluster of tropical fruit", "Stacked river stones", "A lotus flower"],
     "answer": "A cluster of tropical fruit",
     "hint": "Near the koi pond — rounded organic forms in stone.",
+    "explanation_image": "",
     "explanation": "Tropical Fruit (1995) celebrates abundance and renewal. Rounded forms echo seeds/fruit, symbolising growth and regeneration."
   },
   {
     "id": 6,
-    "question": "[Science Block • Koi Pond] Identify the fragrant plant by the koi pond that’s used in local desserts.",
+    "question_image": "static/images/1a_home.jpg",    
+    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "question": "Identify the fragrant plant by the koi pond that’s used in local desserts.",
     "options": ["Pandan", "Lemongrass", "Mint"],
     "answer": "Pandan",
     "hint": "You might smell it before you see it — long, blade-like leaves by the pond’s edge.",
+    "explanation_image": "",
     "explanation": "Pandan leaves are commonly used to infuse fragrance into local desserts and rice."
   },
   {
     "id": 7,
-    "question": "[Level 4] This student artwork reimagines a work by Chua Mia Tee. Which painting inspired it?",
+    "question_image": "static/images/1a_home.jpg",    
+    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "question": "This student artwork reimagines a work by Chua Mia Tee. Which painting inspired it?",
     "options": ["Portable Cinema", "National Language Class", "Epic Poem of Malaya"],
     "answer": "Portable Cinema",
     "hint": "A nostalgic piece about storytelling on wheels.",
+    "explanation_image": "",
     "explanation": "Chua Mia Tee (b. 1931) is a celebrated Nanyang artist known for realistic scenes of local life. 'Portable Cinema' reflects everyday people, community, and identity."
   },
   {
     "id": 8,
-    "question": "[Level 4] 'The Egg Seller’s Daughter' by Teo Bei Lin is made primarily of what material?",
+    "question_image": "static/images/1a_home.jpg",    
+    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "question": "'The Egg Seller’s Daughter' by Teo Bei Lin is made primarily of what material?",
     "options": ["Egg cartons", "Newspaper collage", "Wooden blocks"],
     "answer": "Egg cartons",
     "hint": "The material links to the artist’s family trade.",
+    "explanation_image": "",
     "explanation": "The work uses painted egg cartons to honour the artist’s parents’ labour. It also references Pointillism — many small dabs/dots forming an image."
   },
   {
     "id": 9,
-    "question": "[SPR] Which Han Sai Por sculpture mimics roots and vines, symbolising growth?",
+    "question_image": "static/images/1a_home.jpg",    
+    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "question": "Which Han Sai Por sculpture mimics roots and vines, symbolising growth?",
     "options": ["Sprouting", "Seed", "Germination"],
     "answer": "Sprouting",
     "hint": "Created by Han Sai Por (AEP pioneer); located in the SPR area.",
+    "explanation_image": "",
     "explanation": "Sprouting (1995) captures vitality with organic stone forms emerging from the earth — growth, renewal, and life’s continuous cycle."
   }
 ]
