@@ -19,7 +19,9 @@ def load_questions() -> List[Dict[str, Any]]:
         data = json.load(f)
     # Basic validation for visible questions only: exactly 3 options, answer must match an option
     for i, q in enumerate(data):
-        if not q.get("display_question", True):
+        # Visible if is_visible is True, else fallback to legacy display_question, default True
+        is_visible = bool(q.get("is_visible", q.get("display_question", True)))
+        if not is_visible:
             continue
         opts = q.get("options", [])
         if len(opts) != 3:
@@ -63,8 +65,13 @@ def tg_api(method: str) -> str:
 
 
 def get_active_questions() -> List[Dict[str, Any]]:
-    """Return only questions marked for display (default True)."""
-    return [q for q in QUESTIONS if q.get("display_question", True)]
+    """Return only questions marked visible (default True). Supports legacy key as fallback."""
+    active: List[Dict[str, Any]] = []
+    for q in QUESTIONS:
+        visible = bool(q.get("is_visible", q.get("display_question", True)))
+        if visible:
+            active.append(q)
+    return active
 
 
 def send_message(chat_id: int, text: str, reply_markup: Dict[str, Any] | None = None) -> None:

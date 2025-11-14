@@ -9,7 +9,7 @@
     "hint": "Look for a mural that captures scenes from Singapore’s past — shophouses, hawkers, and everyday life. It’s a colourful window into our nation’s heritage, created by NYGH AEP students together with Ritz-Carlton for SG50.",
     "explanation_image": "static/images/1a_home.jpg",    
     "explanation": "This artwork is called “Home” . It is a collaboration between Ritz-Carlton, Millenia Singapore and NYGH AEP students in order to commemorate Singapore’s 50th birthday. This painting is a tribute to the rich colonial heritage of Singapore. This painting is a collage of different cultures’ streets in the past. Can you spot the Malay street vendors selling satay and the tarik? There are also Chinese hawkers selling ice kachang on a push cart and samsui women in their trademark red cloth hats and coolies.",
-    "display_question" : true
+    "is_visible" : true
   },
   {
     "id": 2,
@@ -21,7 +21,7 @@
     "hint": "Back entrance of the auditorium (Level 1), near the lift.",
     "explanation_image": "static/images/2_crying_for_help.jpg",
     "explanation": "The work camouflages an alligator using trash imagery to warn about plastic waste’s impact on nature. Artwork credit: 'Crying for help', Ong Jing Ru Cheryl, 2019.",
-    "display_question": true
+    "is_visible": true
   },
   {
     "id": 3,
@@ -33,7 +33,7 @@
     "hint": "By the red brick entrance near the garden; the artist taught AEP at NYGH.",
     "explanation_image": "",
     "explanation": "Family (1993) by Han Sai Por — one of Singapore’s leading sculptors and a former AEP teacher at NYGH — reflects nature’s forms through calm, organic shapes.",
-    "display_question": true
+    "is_visible": true
   },
   {
     "id": 4,
@@ -45,7 +45,7 @@
     "hint": "Find it in the Science Block — a study of the many faces we wear.",
     "explanation_image": "",
     "explanation": "Expression (2021) by Ke Shuwen explores emotion and identity through expressions without relying on words.",
-    "display_question": true
+    "is_visible": true
   },
   {
     "id": 5,
@@ -57,7 +57,7 @@
     "hint": "Near the koi pond — rounded organic forms in stone.",
     "explanation_image": "",
     "explanation": "Tropical Fruit (1995) celebrates abundance and renewal. Rounded forms echo seeds/fruit, symbolising growth and regeneration.",
-    "display_question": true
+    "is_visible": true
   },
   {
     "id": 6,
@@ -69,7 +69,7 @@
     "hint": "You might smell it before you see it — long, blade-like leaves by the pond’s edge.",
     "explanation_image": "",
     "explanation": "Pandan leaves are commonly used to infuse fragrance into local desserts and rice.",
-    "display_question": true
+    "is_visible": true
   },
   {
     "id": 7,
@@ -81,7 +81,7 @@
     "hint": "A nostalgic piece about storytelling on wheels.",
     "explanation_image": "",
     "explanation": "Chua Mia Tee (b. 1931) is a celebrated Nanyang artist known for realistic scenes of local life. 'Portable Cinema' reflects everyday people, community, and identity.",
-    "display_question": true
+    "is_visible": true
   },
   {
     "id": 8,
@@ -93,7 +93,7 @@
     "hint": "The material links to the artist’s family trade.",
     "explanation_image": "",
     "explanation": "The work uses painted egg cartons to honour the artist’s parents’ labour. It also references Pointillism — many small dabs/dots forming an image.",
-    "display_question": true
+    "is_visible": true
   },
   {
     "id": 9,
