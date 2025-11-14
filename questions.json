@@ -24,7 +24,7 @@
   {
     "id": 3,
     "question_image": "",    
-    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "intro": "Three figures stand, tall and near,\nBound by love, they stay sincere.\nFormed by hands that once taught art,\nSeek this sculpture close to the school’s heart.",
     "question": "At the gateway of Nanyang, what is the title of Han Sai Por’s sculpture?",
     "options": ["Family", "Roots", "Harmony"],
     "answer": "Family",
@@ -35,7 +35,7 @@
   {
     "id": 4,
     "question_image": "static/images/1a_home.jpg",    
-    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "intro": "Find me in the Science Block, where discovery meets emotion. This artwork explores the many faces we wear and the feelings we hide beneath a study of “expression” beyond words.",
     "question": "What is the title of the artwork that studies facial expression beyond words?",
     "options": ["Expression", "Emotion", "Faces"],
     "answer": "Expression",
@@ -46,7 +46,7 @@
   {
     "id": 5,
     "question_image": "static/images/1a_home.jpg",    
-    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "intro": "I rest in water, round and bright,\nA cluster of life in the morning light.\nNot for eating, but for view —\nA fruit of stone, in nature’s hue.",
     "question": "Han Sai Por’s stone work by the koi pond resembles what?",
     "options": ["A cluster of tropical fruit", "Stacked river stones", "A lotus flower"],
     "answer": "A cluster of tropical fruit",
@@ -68,7 +68,7 @@
   {
     "id": 7,
     "question_image": "static/images/1a_home.jpg",    
-    "intro": "Streets of old, where stories blend, Cultures meet, traditions mend. Red hats, sweet ice, and satay’s flame, A nation’s roots within this frame. Created by hands both young and wise, Find this “home” where heritage lies.",
+    "intro": "Find this nostalgic piece on Level 4, where the past meets the present. It reimagines a local artist’s vision of storytelling, when cinema rolled through the streets instead of playing on screens.",
     "question": "This student artwork reimagines a work by Chua Mia Tee. Which painting inspired it?",
     "options": ["Portable Cinema", "National Language Class", "Epic Poem of Malaya"],
     "answer": "Portable Cinema",
