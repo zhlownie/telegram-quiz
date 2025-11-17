@@ -434,9 +434,15 @@ def finalize_quiz(chat_id: int) -> None:
     )
     send_message(chat_id, finish)
 
-    # Notify owner/admins with the exact same finish template shown to the student
+    # Notify owner/admins with the same summary but without the replay line
     try:
-        notify_admins(finish)
+        admin_finish = (
+            f"🏁 <b>{team}</b> — <b>Hunt complete!</b>\n\n"
+            f"Score: <b>{score}</b> / <b>{total}</b>"
+            f"{duration_line}"
+            + (f"\n🧠 Hints used: <b>{hint_count}</b>  |  Penalty: <b>+{_fmt_dur(penalties_total)}</b>" if hint_count > 0 else "")
+        )
+        notify_admins(admin_finish)
     except Exception:
         pass
     # Reset state but keep session dict
