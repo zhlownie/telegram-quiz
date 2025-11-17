@@ -127,18 +127,7 @@ def send_message(chat_id: int, text: str, reply_markup: Dict[str, Any] | None = 
     resp.raise_for_status()
 
 
-def build_reply_photo_keyboard(placeholder: str = "Tap 📎 to attach a photo") -> Dict[str, Any]:
-    return {
-        "keyboard": [[{"text": "📷 Send Photo"}]],
-        "resize_keyboard": True,
-        "one_time_keyboard": False,
-        "is_persistent": True,
-        "input_field_placeholder": placeholder,
-    }
-
-
-def reply_keyboard_remove() -> Dict[str, Any]:
-    return {"remove_keyboard": True}
+# (Removed) Reply keyboard helpers were previously used to prompt photo uploads.
 
 
 def notify_admins(text: str) -> None:
