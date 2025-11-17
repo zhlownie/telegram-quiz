@@ -220,8 +220,8 @@ def ensure_session(chat_id: int) -> Dict[str, Any]:
             "team_name": None,
             "state": None,  # 'awaiting_team_name' | 'awaiting_ready' | None
             "started_at": None,  # UNIX timestamp when quiz starts (on READY)
-            "penalty_secs": 0,  # (unused now) accumulated time penalties
-            "hint_used_indices": [],  # (unused now) indices where hint already used
+            "penalty_secs": 0,
+            "hint_used_indices": [],  # indices where hint already used (penalized once)
             "awaiting_next": False,  # require Next before moving on
             "awaiting_photo_for": None,  # when user tapped Upload Photo, expect photo for this index
             "photo_awarded_for": set(),  # indices that have been awarded for photo
@@ -315,7 +315,7 @@ def present_question(chat_id: int) -> None:
 
 
 def _use_hint_and_reprompt(chat_id: int) -> None:
-    """Apply hint penalty once per question, send hint text, and re-present current question."""
+    """Show hint and apply time penalty once per question; do not re-present the question."""
     sess = ensure_session(chat_id)
     idx = sess.get("index", 0)
     active = get_active_questions()
@@ -328,8 +328,15 @@ def _use_hint_and_reprompt(chat_id: int) -> None:
         send_message(chat_id, "No hint available for this question.")
         return
 
-    # Penalties disabled: just show hint
-    send_message(chat_id, f"💡 Hint: {hint}")
+    # Apply penalty once per question
+    used_list = sess.get("hint_used_indices", [])
+    if idx not in used_list:
+        sess["penalty_secs"] = int(sess.get("penalty_secs", 0)) + HINT_PENALTY_SECS
+        used_list.append(idx)
+        sess["hint_used_indices"] = used_list
+        send_message(chat_id, f"💡 Hint: {hint}  (−{HINT_PENALTY_SECS} secs)")
+    else:
+        send_message(chat_id, f"💡 Hint: {hint}")
     # Do not re-present the question; users can answer from the existing prompt
 
 
@@ -406,17 +413,26 @@ def finalize_quiz(chat_id: int) -> None:
         parts.append(f"{s} sec{'s' if s != 1 else ''}")
         return " ".join(parts)
 
+    # Penalties
+    penalties_total = int(sess.get("penalty_secs", 0))
+    hint_count = len(sess.get("hint_used_indices", []))
+
     duration_line = ""
     elapsed_val: float | None = None
     if sess.get("started_at"):
-        elapsed_val = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
+        base = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
+        elapsed_val = base + penalties_total
         duration_line = f"\n⏱️ Time: <b>{_fmt_dur(elapsed_val)}</b>"
+        if penalties_total > 0:
+            duration_line += f"  (includes +{_fmt_dur(penalties_total)} for hints)"
 
     team = sess.get("team_name") or "Adventurers"
     finish = (
         f"🏁 <b>{team}</b> — <b>Hunt complete!</b>\n\n"
         f"Score: <b>{score}</b> / <b>{total}</b>"
-        f"{duration_line}\n\n"
+        f"{duration_line}"
+        + (f"\n🧠 Hints used: <b>{hint_count}</b>  |  Penalty: <b>+{_fmt_dur(penalties_total)}</b>" if hint_count > 0 else "")
+        + "\n\n"
         "Type <b>START</b> to play again."
     )
     send_message(chat_id, finish)
@@ -424,9 +440,11 @@ def finalize_quiz(chat_id: int) -> None:
     # Notify owner/admins of result
     try:
         if elapsed_val is not None:
-            notify_admins(f"[{team}] — Hunt complete! Score {score}/{total}; Time {_fmt_dur(elapsed_val)}")
+            extra = f"; Hints used: {hint_count} (+{_fmt_dur(penalties_total)})" if hint_count > 0 else ""
+            notify_admins(f"[{team}] — Hunt complete! Score {score}/{total}; Time {_fmt_dur(elapsed_val)}{extra}")
         else:
-            notify_admins(f"[{team}] — Hunt complete! Score {score}/{total}")
+            extra = f"; Hints used: {hint_count} (+{_fmt_dur(penalties_total)})" if hint_count > 0 else ""
+            notify_admins(f"[{team}] — Hunt complete! Score {score}/{total}{extra}")
     except Exception:
         pass
     # Reset state but keep session dict
@@ -434,6 +452,11 @@ def finalize_quiz(chat_id: int) -> None:
     sess["score"] = 0
     sess["started_at"] = None
     sess["awaiting_next"] = False
+    sess["awaiting_photo_for"] = None
+    sess["photo_awarded_for"] = set()
+    sess["exp_sent_for"] = set()
+    sess["penalty_secs"] = 0
+    sess["hint_used_indices"] = []
 
 
 @app.get("/")
@@ -559,9 +582,9 @@ def telegram_webhook() -> Any:
                 if idx not in sess["photo_awarded_for"]:
                     sess["photo_awarded_for"].add(idx)
                     sess["score"] += 1
-                    send_message(int(chat_id), "✅ Nice capture! Point awarded.", reply_markup=reply_keyboard_remove())
+                    send_message(int(chat_id), "✅ Nice capture! Point awarded. You can re-upload another photo before pressing <b>Next</b>.", reply_markup=reply_keyboard_remove())
                 else:
-                    send_message(int(chat_id), "📸 Got it — photo received and forwarded.", reply_markup=reply_keyboard_remove())
+                    send_message(int(chat_id), "📸 Got it — photo received and forwarded. You can re-upload another photo before pressing <b>Next</b>.", reply_markup=reply_keyboard_remove())
 
                 # Send explanations once per question then show Next
                 if idx not in sess["exp_sent_for"]:
