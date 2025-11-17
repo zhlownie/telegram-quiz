@@ -434,17 +434,9 @@ def finalize_quiz(chat_id: int) -> None:
     )
     send_message(chat_id, finish)
 
-    # Notify owner/admins of result (include both times if available)
+    # Notify owner/admins with the exact same finish template shown to the student
     try:
-        if elapsed_total is not None and base_elapsed is not None:
-            extra = f"; Hints used: {hint_count} (+{_fmt_dur(penalties_total)})" if hint_count > 0 else ""
-            notify_admins(
-                f"[{team}] — Hunt complete! Score {score}/{total}; "
-                f"Time { _fmt_dur(base_elapsed) }; Total { _fmt_dur(elapsed_total) }{extra}"
-            )
-        else:
-            extra = f"; Hints used: {hint_count} (+{_fmt_dur(penalties_total)})" if hint_count > 0 else ""
-            notify_admins(f"[{team}] — Hunt complete! Score {score}/{total}{extra}")
+        notify_admins(finish)
     except Exception:
         pass
     # Reset state but keep session dict
