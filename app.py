@@ -23,6 +23,9 @@ def load_questions() -> List[Dict[str, Any]]:
         is_visible = bool(q.get("is_visible", q.get("display_question", True)))
         if not is_visible:
             continue
+        # Allow photo-task questions to skip MCQ validation
+        if q.get("expect_photo"):
+            continue
         opts = q.get("options", [])
         if len(opts) != 3:
             raise ValueError(f"Question {i+1} must have exactly 3 options, got {len(opts)}")
@@ -47,6 +50,8 @@ HINT_PENALTY_SECS = int(os.environ.get("HINT_PENALTY_SECS", "20"))
 HINT_BUTTON_DATA = "__HINT__"
 NEXT_BUTTON_DATA = "__NEXT__"
 NEXT_BUTTON_LABEL = "Next Question ▶️"
+PHOTO_BUTTON_DATA = "__PHOTO__"
+PHOTO_BUTTON_LABEL = "📷 Upload Photo"
 
 # Admin notifications: set OWNER_CHAT_ID="123456789" or ADMIN_CHAT_IDS="123,456"
 ADMIN_CHAT_IDS: List[int] = []
@@ -204,6 +209,9 @@ def ensure_session(chat_id: int) -> Dict[str, Any]:
             "penalty_secs": 0,  # (unused now) accumulated time penalties
             "hint_used_indices": [],  # (unused now) indices where hint already used
             "awaiting_next": False,  # require Next before moving on
+            "awaiting_photo_for": None,  # when user tapped Upload Photo, expect photo for this index
+            "photo_awarded_for": set(),  # indices that have been awarded for photo
+            "exp_sent_for": set(),  # indices where explanations already sent
         }
         sessions[chat_id] = sess
     else:
@@ -211,6 +219,9 @@ def ensure_session(chat_id: int) -> Dict[str, Any]:
         sess.setdefault("penalty_secs", 0)
         sess.setdefault("hint_used_indices", [])
         sess.setdefault("awaiting_next", False)
+        sess.setdefault("awaiting_photo_for", None)
+        sess.setdefault("photo_awarded_for", set())
+        sess.setdefault("exp_sent_for", set())
     return sess
 
 
@@ -227,6 +238,13 @@ def build_next_keyboard() -> Dict[str, Any]:
     return {"inline_keyboard": [[{"text": NEXT_BUTTON_LABEL, "callback_data": NEXT_BUTTON_DATA}]]}
 
 
+def build_photo_keyboard(include_hint: bool = False) -> Dict[str, Any]:
+    keyboard = [[{"text": PHOTO_BUTTON_LABEL, "callback_data": PHOTO_BUTTON_DATA}]]
+    if include_hint:
+        keyboard.append([{"text": "💡 Hint", "callback_data": HINT_BUTTON_DATA}])
+    return {"inline_keyboard": keyboard}
+
+
 def make_absolute_image_url(image_url: str) -> str:
     if image_url.startswith("http://") or image_url.startswith("https://"):
         return image_url
@@ -240,6 +258,7 @@ def make_absolute_image_url(image_url: str) -> str:
 def present_question(chat_id: int) -> None:
     sess = ensure_session(chat_id)
     sess["awaiting_next"] = False
+    sess["awaiting_photo_for"] = None
     idx = sess["index"]
     active = get_active_questions()
     if idx >= len(active):
@@ -270,9 +289,13 @@ def present_question(chat_id: int) -> None:
         body = f"{header}\n\n{intro_block}\n\n{bold_q}"
     else:
         body = f"{header}\n\n{bold_q}"
-    options: List[str] = q["options"]
-    reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint")))
-    send_message(chat_id, body, reply_markup=reply_markup)
+    if q.get("expect_photo"):
+        reply_markup = build_photo_keyboard(include_hint=bool(q.get("hint")))
+        send_message(chat_id, body, reply_markup=reply_markup)
+    else:
+        options: List[str] = q["options"]
+        reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint")))
+        send_message(chat_id, body, reply_markup=reply_markup)
 
 
 def _use_hint_and_reprompt(chat_id: int) -> None:
@@ -302,6 +325,10 @@ def handle_answer(chat_id: int, selected: str) -> None:
         finalize_quiz(chat_id)
         return
     q = active[idx]
+    # For photo questions, buttons shouldn't route here
+    if q.get("expect_photo"):
+        send_message(chat_id, "Please upload a photo for this question using the button.")
+        return
     correct = q["answer"]
     is_correct = selected == correct
     if is_correct:
@@ -330,6 +357,20 @@ def handle_answer(chat_id: int, selected: str) -> None:
     else:
         sess["awaiting_next"] = True
         send_message(chat_id, "When you’re ready, press <b>Next Question</b>.", reply_markup=build_next_keyboard())
+
+
+def notify_admins_photo(file_id: str, caption: str | None = None) -> None:
+    if not ADMIN_CHAT_IDS:
+        return
+    for admin_id in ADMIN_CHAT_IDS:
+        try:
+            payload: Dict[str, Any] = {"chat_id": admin_id, "photo": file_id}
+            if caption:
+                payload["caption"] = caption
+                payload["parse_mode"] = "HTML"
+            requests.post(tg_api("sendPhoto"), json=payload, timeout=15)
+        except Exception:
+            pass
 
 
 def finalize_quiz(chat_id: int) -> None:
@@ -431,6 +472,15 @@ def telegram_webhook() -> Any:
                 sess["started_at"] = time.time()
                 sess["state"] = None
                 present_question(int(chat_id))
+            elif str(data) == PHOTO_BUTTON_DATA:
+                sess = ensure_session(int(chat_id))
+                idx = sess.get("index", 0)
+                active = get_active_questions()
+                if idx < len(active) and active[idx].get("expect_photo"):
+                    sess["awaiting_photo_for"] = idx
+                    send_message(int(chat_id), "Please upload a photo now. You can re-upload; we’ll forward them to the admins.")
+                else:
+                    send_message(int(chat_id), "This question expects an option. Please pick one below.")
             elif str(data) == NEXT_BUTTON_DATA:
                 sess = ensure_session(int(chat_id))
                 active = get_active_questions()
@@ -473,6 +523,49 @@ def telegram_webhook() -> Any:
         text = (msg.get("text") or "").strip()
         if chat_id is None:
             return jsonify({"ok": True})
+
+        # Handle incoming photo uploads (for photo questions)
+        if msg.get("photo"):
+            sess = ensure_session(int(chat_id))
+            idx = sess.get("index", 0)
+            active = get_active_questions()
+            photos = msg.get("photo") or []
+            # Choose the largest size
+            file_id = photos[-1].get("file_id") if photos else None
+            team = sess.get("team_name") or "Adventurers"
+            if idx < len(active) and active[idx].get("expect_photo") and file_id:
+                # Forward to admins
+                try:
+                    notify_admins_photo(file_id, caption=f"[{team}] — Q{idx+1} photo upload")
+                except Exception:
+                    pass
+                # Award once per question
+                if idx not in sess["photo_awarded_for"]:
+                    sess["photo_awarded_for"].add(idx)
+                    sess["score"] += 1
+                    send_message(int(chat_id), "✅ Nice capture! Point awarded.")
+                else:
+                    send_message(int(chat_id), "📸 Got it — photo received and forwarded.")
+
+                # Send explanations once per question then show Next
+                if idx not in sess["exp_sent_for"]:
+                    sess["exp_sent_for"].add(idx)
+                    q = active[idx]
+                    txt_list = to_list(q.get("explanations") or q.get("explanation"))
+                    for t in txt_list:
+                        send_message(int(chat_id), f"ℹ️ {t}")
+                    # Next gating or finalize
+                    if idx + 1 >= len(active):
+                        sess["awaiting_next"] = False
+                        finalize_quiz(int(chat_id))
+                    else:
+                        sess["awaiting_next"] = True
+                        send_message(int(chat_id), "When you’re ready, press <b>Next Question</b>.", reply_markup=build_next_keyboard())
+                return jsonify({"ok": True})
+            else:
+                # Photo sent but not expected; gently nudge
+                send_message(int(chat_id), "Thanks! For this question, please select an answer from the options.")
+                return jsonify({"ok": True})
 
         # Normalize commands
         upper = text.upper()
@@ -581,7 +674,12 @@ def telegram_webhook() -> Any:
                 if sess.get("awaiting_next"):
                     send_message(int(chat_id), "You’ve already answered. Press <b>Next Question</b> to continue.")
                     return jsonify({"ok": True})
-                options = active[idx]["options"]
+                q = active[idx]
+                # For photo questions, guide user to upload
+                if q.get("expect_photo"):
+                    send_message(int(chat_id), "This question needs a photo. Tap <b>Upload Photo</b> or attach one directly.")
+                    return jsonify({"ok": True})
+                options = q["options"]
                 if text in options:
                     handle_answer(int(chat_id), text)
                     return jsonify({"ok": True})

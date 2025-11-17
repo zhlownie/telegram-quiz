@@ -44,15 +44,15 @@
   },
   {
     "id": 4.0,
-    "question_image": "",    
-    "intro": "Find me in the Science Block, where discovery meets emotion. This artwork explores the many faces we wear and the feelings we hide beneath a study of “expression” beyond words.",
-    "question": "Choose one of the faces and mimic its expression. What emotion do you think the artist wanted to convey, and why?",
-    "options": ["Expression", "Emotion", "Faces"],
-    "answer": "Expression",
+    "question_image": "",
+    "intro": "Find me in the Science Block, where discovery meets emotion. This artwork explores the many faces we wear and the feelings we hide — a study of expression beyond words.",
+    "question": "📷 Please upload a photo of your team mimicking one of the faces. What emotion do you think the artist wanted to convey?",
+    "expect_photo": true,
     "hint": "Find it in the Science Block — a study of the many faces we wear.",
-    "explanation_images": ["static/images/4_expression_keshuwen.jpg"],
+    "explanation_images": [],
     "explanations": [
-      "Expression, 2021, Ke Shuwen"
+      "Beautifully done — thanks for sharing your expression!",
+      "Every interpretation adds to the story of the artwork. Great job!"
     ],
     "is_visible": true
   },
