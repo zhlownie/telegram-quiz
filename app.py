@@ -127,6 +127,20 @@ def send_message(chat_id: int, text: str, reply_markup: Dict[str, Any] | None = 
     resp.raise_for_status()
 
 
+def build_reply_photo_keyboard(placeholder: str = "Tap 📎 to attach a photo") -> Dict[str, Any]:
+    return {
+        "keyboard": [[{"text": "📷 Send Photo"}]],
+        "resize_keyboard": True,
+        "one_time_keyboard": False,
+        "is_persistent": True,
+        "input_field_placeholder": placeholder,
+    }
+
+
+def reply_keyboard_remove() -> Dict[str, Any]:
+    return {"remove_keyboard": True}
+
+
 def notify_admins(text: str) -> None:
     """Send a notification message to configured admin chat IDs, if any."""
     if not ADMIN_CHAT_IDS:
@@ -292,6 +306,8 @@ def present_question(chat_id: int) -> None:
     if q.get("expect_photo"):
         reply_markup = build_photo_keyboard(include_hint=bool(q.get("hint")))
         send_message(chat_id, body, reply_markup=reply_markup)
+        # Also show a reply keyboard to guide attaching a photo
+        send_message(chat_id, "Use the 📎 icon to attach your photo.", reply_markup=build_reply_photo_keyboard())
     else:
         options: List[str] = q["options"]
         reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint")))
@@ -478,7 +494,7 @@ def telegram_webhook() -> Any:
                 active = get_active_questions()
                 if idx < len(active) and active[idx].get("expect_photo"):
                     sess["awaiting_photo_for"] = idx
-                    send_message(int(chat_id), "Please upload a photo now. You can re-upload; we’ll forward them to the admins.")
+                    send_message(int(chat_id), "Please upload a photo now. You can re-upload; we’ll forward them to the admins.", reply_markup=build_reply_photo_keyboard())
                 else:
                     send_message(int(chat_id), "This question expects an option. Please pick one below.")
             elif str(data) == NEXT_BUTTON_DATA:
@@ -543,9 +559,9 @@ def telegram_webhook() -> Any:
                 if idx not in sess["photo_awarded_for"]:
                     sess["photo_awarded_for"].add(idx)
                     sess["score"] += 1
-                    send_message(int(chat_id), "✅ Nice capture! Point awarded.")
+                    send_message(int(chat_id), "✅ Nice capture! Point awarded.", reply_markup=reply_keyboard_remove())
                 else:
-                    send_message(int(chat_id), "📸 Got it — photo received and forwarded.")
+                    send_message(int(chat_id), "📸 Got it — photo received and forwarded.", reply_markup=reply_keyboard_remove())
 
                 # Send explanations once per question then show Next
                 if idx not in sess["exp_sent_for"]:
