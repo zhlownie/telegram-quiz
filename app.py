@@ -326,7 +326,7 @@ def _use_hint_and_reprompt(chat_id: int) -> None:
         sess["penalty_secs"] = int(sess.get("penalty_secs", 0)) + HINT_PENALTY_SECS
         used_list.append(idx)
         sess["hint_used_indices"] = used_list
-        send_message(chat_id, f"💡 Hint: {hint}  (−{HINT_PENALTY_SECS} secs)")
+        send_message(chat_id, f"💡 Hint: {hint}  (+{HINT_PENALTY_SECS} secs)")
     else:
         send_message(chat_id, f"💡 Hint: {hint}")
     # Do not re-present the question; users can answer from the existing prompt
