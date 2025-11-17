@@ -306,8 +306,11 @@ def present_question(chat_id: int) -> None:
     if q.get("expect_photo"):
         reply_markup = build_photo_keyboard(include_hint=bool(q.get("hint")))
         send_message(chat_id, body, reply_markup=reply_markup)
-        # Also show a reply keyboard to guide attaching a photo
-        send_message(chat_id, "Use the 📎 icon to attach your photo.", reply_markup=build_reply_photo_keyboard())
+        # Clear instruction: accepted anytime; re-uploads allowed
+        send_message(
+            chat_id,
+            "Use the 📎 icon to attach your photo. You can send it anytime in this chat, and you may re-upload more photos before pressing <b>Next</b>."
+        )
     else:
         options: List[str] = q["options"]
         reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint")))
@@ -525,7 +528,10 @@ def telegram_webhook() -> Any:
                 active = get_active_questions()
                 if idx < len(active) and active[idx].get("expect_photo"):
                     sess["awaiting_photo_for"] = idx
-                    send_message(int(chat_id), "Please upload a photo now. You can re-upload; we’ll forward them to the admins.", reply_markup=build_reply_photo_keyboard())
+                    send_message(
+                        int(chat_id),
+                        "Please attach a photo now using the 📎 icon (camera or gallery). You can re-upload photos before pressing <b>Next</b>. We’ll forward them to the admins."
+                    )
                 else:
                     send_message(int(chat_id), "This question expects an option. Please pick one below.")
             elif str(data) == NEXT_BUTTON_DATA:
@@ -590,9 +596,9 @@ def telegram_webhook() -> Any:
                 if idx not in sess["photo_awarded_for"]:
                     sess["photo_awarded_for"].add(idx)
                     sess["score"] += 1
-                    send_message(int(chat_id), "✅ Nice capture! Point awarded. You can re-upload another photo before pressing <b>Next</b>.", reply_markup=reply_keyboard_remove())
+                    send_message(int(chat_id), "✅ Nice capture! Point awarded. You can re-upload another photo before pressing <b>Next</b>.")
                 else:
-                    send_message(int(chat_id), "📸 Got it — photo received and forwarded. You can re-upload another photo before pressing <b>Next</b>.", reply_markup=reply_keyboard_remove())
+                    send_message(int(chat_id), "📸 Got it — photo received and forwarded. You can re-upload another photo before pressing <b>Next</b>.")
 
                 # Send explanations once per question then show Next
                 if idx not in sess["exp_sent_for"]:
