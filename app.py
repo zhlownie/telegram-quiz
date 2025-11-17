@@ -418,13 +418,18 @@ def finalize_quiz(chat_id: int) -> None:
     hint_count = len(sess.get("hint_used_indices", []))
 
     duration_line = ""
-    elapsed_val: float | None = None
+    elapsed_total: float | None = None
+    base_elapsed: float | None = None
     if sess.get("started_at"):
-        base = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
-        elapsed_val = base + penalties_total
-        duration_line = f"\n⏱️ Time: <b>{_fmt_dur(elapsed_val)}</b>"
+        base_elapsed = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
+        elapsed_total = base_elapsed + penalties_total
+        # Show both the raw time and the total time including penalties
+        duration_line = f"\n⏱️ Time: <b>{_fmt_dur(base_elapsed)}</b>"
         if penalties_total > 0:
-            duration_line += f"  (includes +{_fmt_dur(penalties_total)} for hints)"
+            duration_line += (
+                f"\n⚠️ Penalties: <b>+{_fmt_dur(penalties_total)}</b>"
+                f"\n⏱️ Total Time: <b>{_fmt_dur(elapsed_total)}</b>"
+            )
 
     team = sess.get("team_name") or "Adventurers"
     finish = (
@@ -437,11 +442,14 @@ def finalize_quiz(chat_id: int) -> None:
     )
     send_message(chat_id, finish)
 
-    # Notify owner/admins of result
+    # Notify owner/admins of result (include both times if available)
     try:
-        if elapsed_val is not None:
+        if elapsed_total is not None and base_elapsed is not None:
             extra = f"; Hints used: {hint_count} (+{_fmt_dur(penalties_total)})" if hint_count > 0 else ""
-            notify_admins(f"[{team}] — Hunt complete! Score {score}/{total}; Time {_fmt_dur(elapsed_val)}{extra}")
+            notify_admins(
+                f"[{team}] — Hunt complete! Score {score}/{total}; "
+                f"Time { _fmt_dur(base_elapsed) }; Total { _fmt_dur(elapsed_total) }{extra}"
+            )
         else:
             extra = f"; Hints used: {hint_count} (+{_fmt_dur(penalties_total)})" if hint_count > 0 else ""
             notify_admins(f"[{team}] — Hunt complete! Score {score}/{total}{extra}")
