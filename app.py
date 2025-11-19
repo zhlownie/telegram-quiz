@@ -293,7 +293,7 @@ def present_question(chat_id: int) -> None:
     else:
         body = f"{header}\n\n{bold_q}"
     if q.get("expect_photo"):
-        reply_markup = build_photo_keyboard(include_hint=bool(q.get("hint")))
+        reply_markup = build_photo_keyboard(include_hint=bool(q.get("hint") or q.get("hint_image")))
         send_message(chat_id, body, reply_markup=reply_markup)
         # Clear instruction: accepted anytime; re-uploads allowed
         send_message(
@@ -302,12 +302,12 @@ def present_question(chat_id: int) -> None:
         )
     else:
         options: List[str] = q["options"]
-        reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint")))
+        reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint") or q.get("hint_image")))
         send_message(chat_id, body, reply_markup=reply_markup)
 
 
 def _use_hint_and_reprompt(chat_id: int) -> None:
-    """Show hint and apply time penalty once per question; do not re-present the question."""
+    """Show hint image and/or text with +penalty once per question; do not re-present the question."""
     sess = ensure_session(chat_id)
     idx = sess.get("index", 0)
     active = get_active_questions()
@@ -315,20 +315,34 @@ def _use_hint_and_reprompt(chat_id: int) -> None:
         send_message(chat_id, "You're not in an active quiz. Type START to play.")
         return
     q = active[idx]
-    hint = q.get("hint")
-    if not hint:
+    hint_text = (q.get("hint") or "").strip()
+    hint_image = (q.get("hint_image") or "").strip()
+    if not hint_text and not hint_image:
         send_message(chat_id, "No hint available for this question.")
         return
 
     # Apply penalty once per question
     used_list = sess.get("hint_used_indices", [])
-    if idx not in used_list:
+    first_time = idx not in used_list
+    if first_time:
         sess["penalty_secs"] = int(sess.get("penalty_secs", 0)) + HINT_PENALTY_SECS
         used_list.append(idx)
         sess["hint_used_indices"] = used_list
-        send_message(chat_id, f"💡 Hint: {hint}  (+{HINT_PENALTY_SECS} secs)")
-    else:
-        send_message(chat_id, f"💡 Hint: {hint}")
+
+    # Send image (with caption) if provided; otherwise send text
+    if hint_image:
+        caption_base = f"💡 Hint (+{HINT_PENALTY_SECS} secs)" if first_time else "💡 Hint"
+        caption = caption_base + (f": {hint_text}" if hint_text else "")
+        try:
+            send_photo_auto(chat_id, hint_image, caption=caption)
+        except Exception as e:
+            print(f"[_use_hint_and_reprompt] hint image send failed: {e}", flush=True)
+            if hint_text:
+                msg_prefix = f"💡 Hint (+{HINT_PENALTY_SECS} secs): " if first_time else "💡 Hint: "
+                send_message(chat_id, msg_prefix + hint_text)
+    elif hint_text:
+        msg_prefix = f"💡 Hint (+{HINT_PENALTY_SECS} secs): " if first_time else "💡 Hint: "
+        send_message(chat_id, msg_prefix + hint_text)
     # Do not re-present the question; users can answer from the existing prompt
 
 
