@@ -1,12 +1,12 @@
 [
   {
     "id": 1.0,
-    "question_image": "",    
+    "question_image": "static/images/1a_home-hint.jpg",    
     "intro": "Streets of old, where stories blend,\nCultures meet, traditions mend.\nRed hats, sweet ice, and satay’s flame,\nA nation’s roots within this frame.\nCreated by hands both young and wise,\nFind this “home” where heritage lies.",
-    "question": "How many shophouses can you spot in the painting?",
+    "question": "Look for this painting and tell me how many shophouses can you spot in the painting?",
     "options": ["4", "6", "8"],
     "answer": "6",
-    "hint": "Look for a mural that captures scenes from Singapore’s past — shophouses, hawkers, and everyday life. It’s a colourful window into our nation’s heritage, created by NYGH AEP students together with Ritz-Carlton for SG50.",
+    "hint": "You’re close when you hear echoes and applause! Seek the artwork near where performances come alive.",
     "explanation_images": ["static/images/1a_home.jpg"],
     "explanations": [
       "This artwork is called “Home” . It is a collaboration between Ritz-Carlton, Millenia Singapore and NYGH AEP students in order to commemorate Singapore’s 50th birthday. This painting is a tribute to the rich colonial heritage of Singapore. This painting is a collage of different cultures’ streets in the past. Can you spot the Malay street vendors selling satay and the tarik? There are also Chinese hawkers selling ice kachang on a push cart and samsui women in their trademark red cloth hats and coolies."
@@ -17,13 +17,16 @@
     "id": 2.0,
     "question_image": "",    
     "intro": "I look like an animal hiding in the wild,\nBut I’m really trash, not nature’s child.\nA plastic danger in disguise I stay,\nCan you find me and see what I say?",
-    "question": "What creature is camouflaged within this artwork, and what message does the artist convey about our relationship with the environment?",
+    "question": "Find this artwork and tell me what creature is camouflaged within this artwork.",
     "options": ["Alligator", "Otter", "Monitor lizard"],
     "answer": "Alligator",
     "hint": "Back entrance of the auditorium (Level 1), near the lift.",
     "explanation_images": ["static/images/2_crying_for_help.jpg"],
     "explanations": [
-      "The work camouflages an alligator using trash imagery to warn about plastic waste’s impact on nature. Artwork credit: 'Crying for help', Ong Jing Ru Cheryl, 2019."
+      "Crying for help, Ong Jing Ru Cheryl, 2019",
+      "Crying for Help is a thought-provoking artwork that blends realism with symbolism. At first glance, it appears to show a crumpled plastic snack wrapper lying in a natural environment. But look closer, the folds and shadows of the wrapper cleverly form the shape of a camouflaged alligator.",
+      "This hidden creature represents the lurking dangers of pollution. The artwork highlights how discarded plastic doesn't just spoil the landscape. It silently threatens wildlife and disrupts delicate ecosystems. By disguising the alligator within the trash, the artist reminds viewers that environmental harm is often unseen, ignored, or underestimated, even when it lies right before our eyes.",
+      "The piece encourages viewers to pause, look carefully, and reflect on how small everyday actions like littering can have far-reaching consequences for nature."
     ],
     "is_visible": true
   },
