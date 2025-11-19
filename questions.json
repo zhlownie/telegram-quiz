@@ -39,11 +39,10 @@
     "question": "What is the name of the artwork?",
     "options": ["Family", "Roots", "Harmony"],
     "answer": "Family",
-    "hint": "By the red brick entrance near the garden; the artist taught AEP at NYGH.",
-    "hint_image": "",
-    "explanation_images": ["static/images/3_family_han_sai_por.jpg", "static/images/3a_han_sai_por_artist_intro.png"],
+    "hint": "",
+    "hint_image": "static/images/3_family_han_sai_por.jpg",
+    "explanation_images": ["static/images/3a_han_sai_por_artist_intro.png"],
     "explanations": [
-      "Family, Han Sai Por, 1993",
       "Han Sai Por was one of the pioneer teachers for the AEP at NYGH from around 1984 (when the AEP started) for approximately three years.\n\nHan Sai Por is one of Singapore’s leading sculptors, known for her nature-inspired and organic forms. Her works often resemble seeds, roots, or flowing natural shapes, carved in stone or cast in bronze to express growth, strength, and harmony with the environment. She uses simple yet powerful forms to reflect the beauty and resilience of nature."
     ],
     "is_visible": true
