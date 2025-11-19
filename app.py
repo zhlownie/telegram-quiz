@@ -286,6 +286,14 @@ def build_photo_keyboard(include_hint: bool = False) -> Dict[str, Any]:
     return {"inline_keyboard": keyboard}
 
 
+def send_next_prompt(chat_id: int) -> None:
+    send_message(
+        chat_id,
+        "If you are ready, press <b>Next Question</b>. Otherwise, you can re-attach another photo.",
+        reply_markup=build_next_keyboard(),
+    )
+
+
 def make_absolute_image_url(image_url: str) -> str:
     if image_url.startswith("http://") or image_url.startswith("https://"):
         return image_url
@@ -645,9 +653,9 @@ def telegram_webhook() -> Any:
                 if idx not in sess["photo_awarded_for"]:
                     sess["photo_awarded_for"].add(idx)
                     sess["score"] += 1
-                    send_message(int(chat_id), "✅ Nice capture! Point awarded. You can re-upload another photo before pressing <b>Next</b>.")
+                    send_message(int(chat_id), "✅ Nice capture! Point awarded.")
                 else:
-                    send_message(int(chat_id), "📸 Got it — photo received and forwarded. You can re-upload another photo before pressing <b>Next</b>.")
+                    send_message(int(chat_id), "📸 Got it — photo received and forwarded.")
 
                 # Send explanations once per question then show Next
                 if idx not in sess["exp_sent_for"]:
@@ -656,15 +664,15 @@ def telegram_webhook() -> Any:
                     txt_list = to_list(q.get("explanations") or q.get("explanation"))
                     for t in txt_list:
                         send_message(int(chat_id), f"ℹ️ {t}")
-                    # Next gating or finalize
-                    if idx + 1 >= len(active):
-                        sess["awaiting_next"] = False
-                        finalize_quiz(int(chat_id))
-                    else:
-                        sess["awaiting_next"] = True
-                        # Pause timer while waiting for Next
-                        timer_pause(sess)
-                        send_message(int(chat_id), "When you’re ready, press <b>Next Question</b>.", reply_markup=build_next_keyboard())
+                # Next gating or finalize — always prompt Next on every photo upload (unless last)
+                if idx + 1 >= len(active):
+                    sess["awaiting_next"] = False
+                    finalize_quiz(int(chat_id))
+                else:
+                    sess["awaiting_next"] = True
+                    # Pause timer while waiting for Next (idempotent if already paused)
+                    timer_pause(sess)
+                    send_next_prompt(int(chat_id))
                 return jsonify({"ok": True})
             else:
                 # Photo sent but not expected; gently nudge
