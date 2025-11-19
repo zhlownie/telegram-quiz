@@ -53,6 +53,29 @@ NEXT_BUTTON_LABEL = "Next Question ▶️"
 PHOTO_BUTTON_DATA = "__PHOTO__"
 PHOTO_BUTTON_LABEL = "📷 Upload Photo"
 
+# --- Active time tracking (pause/resume between questions) ---
+def timer_resume(sess: Dict[str, Any]) -> None:
+    """Resume active timer if paused."""
+    if sess.get("time_segment_started") is None:
+        sess["time_segment_started"] = time.time()
+
+
+def timer_pause(sess: Dict[str, Any]) -> None:
+    """Pause active timer and accumulate elapsed into time_accum."""
+    ts = sess.get("time_segment_started")
+    if ts is not None:
+        sess["time_accum"] = float(sess.get("time_accum", 0.0)) + (time.time() - float(ts))
+        sess["time_segment_started"] = None
+
+
+def timer_elapsed(sess: Dict[str, Any]) -> float:
+    """Current total active time (seconds), including running segment if any."""
+    acc = float(sess.get("time_accum", 0.0))
+    ts = sess.get("time_segment_started")
+    if ts is not None:
+        acc += (time.time() - float(ts))
+    return max(0.0, acc)
+
 # Admin notifications: set OWNER_CHAT_ID="123456789" or ADMIN_CHAT_IDS="123,456"
 ADMIN_CHAT_IDS: List[int] = []
 _env_admins = (os.environ.get("OWNER_CHAT_ID") or os.environ.get("ADMIN_CHAT_IDS") or "").strip()
@@ -215,6 +238,9 @@ def ensure_session(chat_id: int) -> Dict[str, Any]:
             "awaiting_photo_for": None,  # when user tapped Upload Photo, expect photo for this index
             "photo_awarded_for": set(),  # indices that have been awarded for photo
             "exp_sent_for": set(),  # indices where explanations already sent
+            # Active timer bookkeeping
+            "time_accum": 0.0,
+            "time_segment_started": None,
         }
         sessions[chat_id] = sess
     else:
@@ -225,6 +251,8 @@ def ensure_session(chat_id: int) -> Dict[str, Any]:
         sess.setdefault("awaiting_photo_for", None)
         sess.setdefault("photo_awarded_for", set())
         sess.setdefault("exp_sent_for", set())
+        sess.setdefault("time_accum", 0.0)
+        sess.setdefault("time_segment_started", None)
     return sess
 
 
@@ -262,6 +290,8 @@ def present_question(chat_id: int) -> None:
     sess = ensure_session(chat_id)
     sess["awaiting_next"] = False
     sess["awaiting_photo_for"] = None
+    # Resume timer for the active question
+    timer_resume(sess)
     idx = sess["index"]
     active = get_active_questions()
     if idx >= len(active):
@@ -385,6 +415,8 @@ def handle_answer(chat_id: int, selected: str) -> None:
         finalize_quiz(chat_id)
     else:
         sess["awaiting_next"] = True
+        # Pause timer while waiting for Next
+        timer_pause(sess)
         send_message(chat_id, "When you’re ready, press <b>Next Question</b>.", reply_markup=build_next_keyboard())
 
 
@@ -423,19 +455,16 @@ def finalize_quiz(chat_id: int) -> None:
     penalties_total = int(sess.get("penalty_secs", 0))
     hint_count = len(sess.get("hint_used_indices", []))
 
+    # Compute active elapsed time (paused while waiting on Next)
     duration_line = ""
-    elapsed_total: float | None = None
-    base_elapsed: float | None = None
-    if sess.get("started_at"):
-        base_elapsed = time.time() - float(sess["started_at"])  # type: ignore[arg-type]
-        elapsed_total = base_elapsed + penalties_total
-        # Show both the raw time and the total time including penalties
-        duration_line = f"\n⏱️ Time: <b>{_fmt_dur(base_elapsed)}</b>"
-        if penalties_total > 0:
-            duration_line += (
-                f"\n⚠️ Penalties: <b>+{_fmt_dur(penalties_total)}</b>"
-                f"\n⏱️ Total Time: <b>{_fmt_dur(elapsed_total)}</b>"
-            )
+    base_elapsed = timer_elapsed(sess)
+    elapsed_total = base_elapsed + penalties_total
+    duration_line = f"\n⏱️ Time: <b>{_fmt_dur(base_elapsed)}</b>"
+    if penalties_total > 0:
+        duration_line += (
+            f"\n⚠️ Penalties: <b>+{_fmt_dur(penalties_total)}</b>"
+            f"\n⏱️ Total Time: <b>{_fmt_dur(elapsed_total)}</b>"
+        )
 
     team = sess.get("team_name") or "Adventurers"
     finish = (
@@ -469,6 +498,9 @@ def finalize_quiz(chat_id: int) -> None:
     sess["exp_sent_for"] = set()
     sess["penalty_secs"] = 0
     sess["hint_used_indices"] = []
+    # Reset active timer
+    sess["time_accum"] = 0.0
+    sess["time_segment_started"] = None
 
 
 @app.get("/")
@@ -515,12 +547,18 @@ def telegram_webhook() -> Any:
                 # Do not present the question yet
             elif str(data).upper() in ("START TIMER", "START_TIMER"):
                 sess = ensure_session(int(chat_id))
+                # (Re)start timers
                 sess["started_at"] = time.time()
+                sess["time_accum"] = 0.0
+                sess["time_segment_started"] = None
                 sess["state"] = None
                 present_question(int(chat_id))
             elif str(data).upper() in ("START TIMER", "START_TIMER"):
                 sess = ensure_session(int(chat_id))
+                # (Re)start timers
                 sess["started_at"] = time.time()
+                sess["time_accum"] = 0.0
+                sess["time_segment_started"] = None
                 sess["state"] = None
                 present_question(int(chat_id))
             elif str(data) == PHOTO_BUTTON_DATA:
@@ -614,6 +652,8 @@ def telegram_webhook() -> Any:
                         finalize_quiz(int(chat_id))
                     else:
                         sess["awaiting_next"] = True
+                        # Pause timer while waiting for Next
+                        timer_pause(sess)
                         send_message(int(chat_id), "When you’re ready, press <b>Next Question</b>.", reply_markup=build_next_keyboard())
                 return jsonify({"ok": True})
             else:
