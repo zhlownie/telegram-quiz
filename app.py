@@ -76,6 +76,16 @@ def timer_elapsed(sess: Dict[str, Any]) -> float:
         acc += (time.time() - float(ts))
     return max(0.0, acc)
 
+
+# --- Hint availability helper ---
+def has_hint(q: Dict[str, Any]) -> bool:
+    """Return True if question has a non-empty hint or hint_image."""
+    ht = q.get("hint")
+    hi = q.get("hint_image")
+    ht_ok = isinstance(ht, str) and ht.strip() != ""
+    hi_ok = isinstance(hi, str) and hi.strip() != ""
+    return ht_ok or hi_ok
+
 # Admin notifications: set OWNER_CHAT_ID="123456789" or ADMIN_CHAT_IDS="123,456"
 ADMIN_CHAT_IDS: List[int] = []
 _env_admins = (os.environ.get("OWNER_CHAT_ID") or os.environ.get("ADMIN_CHAT_IDS") or "").strip()
@@ -323,7 +333,7 @@ def present_question(chat_id: int) -> None:
     else:
         body = f"{header}\n\n{bold_q}"
     if q.get("expect_photo"):
-        reply_markup = build_photo_keyboard(include_hint=bool(q.get("hint") or q.get("hint_image")))
+        reply_markup = build_photo_keyboard(include_hint=has_hint(q))
         send_message(chat_id, body, reply_markup=reply_markup)
         # Clear instruction: accepted anytime; re-uploads allowed
         send_message(
@@ -332,7 +342,7 @@ def present_question(chat_id: int) -> None:
         )
     else:
         options: List[str] = q["options"]
-        reply_markup = build_inline_keyboard(options, include_hint=bool(q.get("hint") or q.get("hint_image")))
+        reply_markup = build_inline_keyboard(options, include_hint=has_hint(q))
         send_message(chat_id, body, reply_markup=reply_markup)
 
 
