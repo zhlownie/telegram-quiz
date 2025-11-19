@@ -7,6 +7,7 @@
     "options": ["4", "6", "8"],
     "answer": "6",
     "hint": "You’re close when you hear echoes and applause! Seek the artwork near where performances come alive.",
+    "hint_image": "",
     "explanation_images": ["static/images/1a_home.jpg"],
     "explanations": [
       "This artwork is called “Home” . It is a collaboration between Ritz-Carlton, Millenia Singapore and NYGH AEP students in order to commemorate Singapore’s 50th birthday. This painting is a tribute to the rich colonial heritage of Singapore. This painting is a collage of different cultures’ streets in the past. Can you spot the Malay street vendors selling satay and the tarik? There are also Chinese hawkers selling ice kachang on a push cart and samsui women in their trademark red cloth hats and coolies."
@@ -21,6 +22,7 @@
     "options": ["Alligator", "Otter", "Monitor lizard"],
     "answer": "Alligator",
     "hint": "Back entrance of the auditorium (Level 1), near the lift.",
+    "hint_image": "",
     "explanation_images": ["static/images/2_crying_for_help.jpg"],
     "explanations": [
       "Crying for help, Ong Jing Ru Cheryl, 2019",
@@ -38,6 +40,7 @@
     "options": ["Family", "Roots", "Harmony"],
     "answer": "Family",
     "hint": "By the red brick entrance near the garden; the artist taught AEP at NYGH.",
+    "hint_image": "",
     "explanation_images": ["static/images/3_family_han_sai_por.jpg", "static/images/3a_han_sai_por_artist_intro.png"],
     "explanations": [
       "Family, Han Sai Por, 1993",
@@ -52,6 +55,7 @@
     "question": "📷 Please upload a photo of your team mimicking one of the faces. What emotion do you think the artist wanted to convey?",
     "expect_photo": true,
     "hint": "Find it in the Science Block — a study of the many faces we wear.",
+    "hint_image": "",
     "explanation_images": [],
     "explanations": [
       "Beautifully done — thanks for sharing your expression!",
@@ -67,6 +71,7 @@
     "options": ["A cluster of tropical fruit", "Stacked river stones", "A lotus flower"],
     "answer": "A cluster of tropical fruit",
     "hint": "Near the koi pond — rounded organic forms in stone.",
+    "hint_image": "",
     "explanation_images": ["static/images/5_1_tropical_fruit_han_sai_por.jpg"],
     "explanations": [
       "Tropical Fruit, Han Sai Por, 1995",
@@ -82,6 +87,7 @@
     "options": ["Pandan", "Lemongrass", "Mint"],
     "answer": "Pandan",
     "hint": "The scent You might smell it before you see it! Look for long, blade-like leaves growing by the koi pond’s edge — a fragrant plant often used in local desserts and rice.",
+    "hint_image": "",
     "explanation_images": [],
     "explanations": [],
     "is_visible": true
@@ -94,6 +100,7 @@
     "options": [],
     "answer": "",
     "hint": "",
+    "hint_image": "",
     "explanation_images": [],
     "explanations": [
       ""
@@ -108,6 +115,7 @@
     "options": ["Portable Cinema", "National Language Class", "Epic Poem of Malaya"],
     "answer": "Portable Cinema",
     "hint": "A nostalgic piece about storytelling on wheels.",
+    "hint_image": "",
     "explanation_images": [],
     "explanations": [
       "Chua Mia Tee (b. 1931) is a celebrated Nanyang artist known for realistic scenes of local life. 'Portable Cinema' reflects everyday people, community, and identity."
@@ -122,6 +130,7 @@
     "options": ["Egg cartons", "Newspaper collage", "Wooden blocks"],
     "answer": "Egg cartons",
     "hint": "The material links to the artist’s family trade.",
+    "hint_image": "",
     "explanation_images": [],
     "explanations": [
       "The work uses painted egg cartons to honour the artist’s parents’ labour. It also references Pointillism — many small dabs/dots forming an image."
@@ -136,6 +145,7 @@
     "options": ["Sprouting", "Seed", "Germination"],
     "answer": "Sprouting",
     "hint": "We have another artwork created by Han Sai Por, who once taught at NYGH’s Art Elective Programme — this sculpture celebrates her love for organic, natural forms.",
+    "hint_image": "",
     "explanation_images": [
       "static/images/9_sprouting_han_sai_por.jpg",
       "static/images/9b_artist_fun fact.png"
